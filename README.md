@@ -1,12 +1,16 @@
-<img width="755" height="755" alt="Generated Image January 22, 2026 - 2_43AM" src="https://github.com/user-attachments/assets/4fb6a29d-ac37-468d-8c0a-dfefc876136b" />
-
 # Power Trio
 
-> Good things come in threes: meals a day, wishes, and the John Mayer Trio.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/4fb6a29d-ac37-468d-8c0a-dfefc876136b" height="30%" width="30%" alt="logo">
+</p>
 
-A committee of agents for planning, building, and refining.
+<p align="center">
+  A committee of agents for planning, building, and refining.
+</p>
 
----
+<p align="center" style="font-size: 0.9em; font-style: italic;">
+  Good things come in threes: meals a day, wishes, and the John Mayer Trio.
+</p>
 
 ## Overview
 
@@ -14,9 +18,23 @@ Power Trio is a three-phase AI agent workflow system designed to deliver code th
 
 The core insight: programming can happen faster with AI agents than humans, but the criticism of AI-generated code is "slop"—fast output that lacks quality. Power Trio addresses this by separating speed (Phase 2) from quality assurance (Phase 3), with clear planning upfront (Phase 1).
 
-**This is a constraint pipeline, not just a reasoning pipeline.** Each phase narrows degrees of freedom, removes ambiguity, and converts opinions into enforceable rules.
+**This is a constraint pipeline, not a reasoning pipeline.** Each phase narrows degrees of freedom, removes ambiguity, and converts opinions into enforceable rules.
 
----
+## Installation
+
+### Claude Code
+
+Add the marketplace:
+
+```bash
+/plugin marketplace add thesimonho/artificial-jellybeans
+```
+
+Then install the plugin:
+
+```bash
+/plugin install power-trio@thesimonho/artificial-jellybeans
+```
 
 ## Why Power Trio? (vs. Sequential Prompting)
 
@@ -31,8 +49,6 @@ Power Trio enables what sequential prompting cannot:
 3. **Forced delegation loops prevent patchy fixes** - Phase 3 cannot hack in quick fixes; they must delegate back to Phase 2's full committee with proper TDD and review
 
 4. **Repeated committee patterns reduce prompt fiddling** - The structure is consistent and predictable, not dependent on crafting perfect sequential prompts
-
----
 
 ## The Three Phases
 
@@ -57,8 +73,6 @@ See [ORCHESTRATION.md](ORCHESTRATION.md) for the orchestration logic within and 
 - Critic prevents poorly-thought-out plans from reaching implementation
 - This mirrors effective design reviews: proposal, expertise, and challenge
 
----
-
 ### Phase 2: Building
 
 **Goal:** Implement the plan quickly without sacrificing long-term code quality
@@ -76,8 +90,6 @@ See [ORCHESTRATION.md](ORCHESTRATION.md) for the orchestration logic within and 
 - Senior Engineer acts as quality gatekeeper at two critical moments: validates tests actually enforce the plan (prevents wasted implementation effort), then ensures the resulting code is maintainable (prevents slop)
 - This mirrors high-functioning human teams: tests catch bugs, senior engineers catch both bad tests and future pain
 - The dual review points (tests then implementation) catch different failure modes while preserving TDD discipline
-
----
 
 ### Phase 3: Refining
 
@@ -98,8 +110,6 @@ See [ORCHESTRATION.md](ORCHESTRATION.md) for the orchestration logic within and 
 - The tension between "make it perfect" and "ship it" produces pragmatic quality
 - Product Manager's business lens balances technical concerns with user needs
 - This mirrors real product teams: specialists identify risks, PM decides what blocks release
-
----
 
 ## Key Design Principles
 
@@ -137,8 +147,6 @@ These are contracts, not documentation for users.
 
 Phase 2 and Phase 3 loop until consensus is reached. Phase 3 cannot hack in fixes—they must delegate back to Phase 2's full committee to implement changes with the same rigor.
 
----
-
 ## When Not to Use Power Trio
 
 **Skip Power Trio for:**
@@ -154,8 +162,6 @@ Phase 2 and Phase 3 loop until consensus is reached. Phase 3 cannot hack in fixe
 - Security or performance-critical code
 - Multi-file features with integration concerns
 - Code that will be maintained long-term
-
----
 
 ## Example Flow
 
