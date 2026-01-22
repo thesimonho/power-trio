@@ -1,12 +1,14 @@
-# Trio Command
+---
+description: Execute the complete Power Trio workflow: Plan → Build → Refine. Use proactively when developing a new feature from scratch.
+disable-model-invocation: false
+user-invocable: true
+context: fork
+agent: orchestrator
+---
 
 Execute the complete Power Trio workflow: Plan → Build → Refine.
 
----
-
 ## Configuration
-
-**See [PARAMETERS.md](../PARAMETERS.md) for all configurable values.**
 
 Key parameters:
 
@@ -55,7 +57,7 @@ phase2_loops: 0
 blocking_issues: []
 ```
 
-## Create a TODO list to keep user informed of progress
+Create a TODO list to keep user informed of progress
 
 ---
 

@@ -1,10 +1,16 @@
-# Trio Refine Command
+---
+description: Execute the Power Trio refining phase only. Use proactively when improving the security or performance of an existing implementation.
+disable-model-invocation: false
+user-invocable: true
+context: fork
+agent: orchestrator
+---
 
 Execute Phase 3: Refining with the Power Trio committee.
 
 ---
 
-You are orchestrating **Phase 3: Refining**. This phase reviews the implementation for security and performance issues before shipping.
+You are orchestrating **Phase 3: Refining**. This phase reviews the feature implementation for security and performance issues before shipping.
 
 ## Task
 

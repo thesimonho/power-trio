@@ -1,12 +1,16 @@
-# Trio Plan Command
+---
+description: Execute the Power Trio planning phase only. Use proactively when creating a plan for a new feature.
+disable-model-invocation: false
+user-invocable: true
+context: fork
+agent: orchestrator
+---
 
 Execute Phase 1: Planning with the Power Trio committee.
 
 ---
 
 ## Configuration
-
-**See [PARAMETERS.md](../PARAMETERS.md) for all configurable values.**
 
 Key parameters for this phase:
 

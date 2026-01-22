@@ -1,12 +1,16 @@
-# Trio Build Command
+---
+description: Execute the Power Trio building phase only. Use proactively when implementing a feature.
+disable-model-invocation: false
+user-invocable: true
+context: fork
+agent: orchestrator
+---
 
 Execute Phase 2: Building with the Power Trio committee using Test-Driven Development.
 
 ---
 
 ## Configuration
-
-**See [PARAMETERS.md](../PARAMETERS.md) for all configurable values.**
 
 Key parameters for this phase:
 
