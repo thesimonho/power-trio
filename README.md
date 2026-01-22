@@ -1,3 +1,5 @@
+<img width="755" height="755" alt="Generated Image January 22, 2026 - 2_43AM" src="https://github.com/user-attachments/assets/4fb6a29d-ac37-468d-8c0a-dfefc876136b" />
+
 # Power Trio
 
 > Good things come in threes: meals a day, wishes, and the John Mayer Trio.
