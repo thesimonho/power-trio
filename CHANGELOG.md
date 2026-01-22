@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/thesimonho/power-trio/compare/v1.0.0...v1.0.1) (2026-01-22)
+
+
+### Bug Fixes
+
+* invoke commands ([e4549ad](https://github.com/thesimonho/power-trio/commit/e4549ad1885bd8425e170ab597b596216860c484))
+
 ## 1.0.0 (2026-01-22)
 
 
