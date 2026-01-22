@@ -4,12 +4,12 @@
   <img src="https://github.com/user-attachments/assets/4fb6a29d-ac37-468d-8c0a-dfefc876136b" height="30%" width="30%" alt="logo">
 </p>
 
-<p align="center">
-  A committee of agents for planning, building, and refining.
-</p>
-
 <p align="center" style="font-size: 0.9em; font-style: italic;">
   Good things come in threes: meals a day, wishes, and the John Mayer Trio.
+</p>
+
+<p align="center">
+  A committee of agents for planning, building, and refining.
 </p>
 
 ## Overview
