@@ -1,0 +1,510 @@
+# Orchestration Logic
+
+## System Architecture
+
+```mermaid
+graph TD
+    Start([User Request]) --> TopOrch[<b>Top-Level Orchestrator</b><br/>Phase sequencing<br/>Phase 3 activation heuristics<br/>Artifact handoffs<br/>Phase 2 ↔ 3 loop management]
+    TopOrch --> Phase1[Phase 1: Planning]
+    Phase1 --> Phase1Committee
+    Phase1Committee --> P1Consensus{All APPROVE?<br/>Open questions = 0?}
+    P1Consensus -->|No| P1Iterate[Iterate within committee<br/>Max 3 blocks per agent]
+    P1Iterate --> Phase1Committee
+    P1Consensus -->|Yes| PlanReport[plan.report]
+    PlanReport --> Phase2[Phase 2: Building]
+    Phase2 --> Phase2Committee
+    Phase2Committee --> TestValidation{Tests validated?<br/>Senior APPROVE?}
+    TestValidation -->|No| TestRevision[Test Author revises<br/>Max 3 blocks from Senior]
+    TestRevision --> Phase2Committee
+    TestValidation -->|Yes| Implementation[Engineer implements<br/>to pass validated tests]
+    Implementation --> P2Consensus{All tests pass?<br/>All APPROVE?}
+    P2Consensus -->|No| P2Iterate[Iterate within committee<br/>Senior can require refactor<br/>of tests and/or implementation<br/>Max 3 blocks per agent total]
+    P2Iterate --> Implementation
+    P2Consensus -->|Yes| ImplReport[implementation.report]
+    ImplReport --> P3Trigger{Activate Phase 3?<br/>Check heuristics:<br/>- Files ≥ 5 or LOC ≥ 300<br/>- Sensitive areas<br/>- Risk signals<br/>- User override}
+    P3Trigger -->|No| ShipDirect[SHIPPED]
+    P3Trigger -->|Yes| Phase3[Phase 3: Refining]
+    Phase3 --> Phase3Committee
+    Phase3Committee --> PMVerdict{PM Verdict?}
+    PMVerdict -->|APPROVED TO SHIP| ReleaseReport[release.report<br/>blocking_issues = 0]
+    ReleaseReport --> ShipFinal[SHIPPED]
+    PMVerdict -->|BLOCKING ISSUES| BlockingReport[release.report<br/>with blocking_issues]
+    BlockingReport --> LoopBack[Loop back to Phase 2<br/>Full committee reconvenes<br/>with blocking issues]
+    LoopBack --> Phase2
+    subgraph Phase1Committee [<b>Phase 1 Committee</b>]
+        direction TB
+        P1Orch[Phase 1 Orchestrator<br/>Turn-taking, Vote counting<br/>Open questions tracking]
+        Planner[Planner<br/>Creates plan]
+        Architect[Architect<br/>Domain expertise]
+        Critic[Critic<br/>Challenges assumptions]
+        P1Orch --> Planner
+        P1Orch --> Architect
+        P1Orch --> Critic
+        Planner -.-> P1Orch
+        Architect -.-> P1Orch
+        Critic -.-> P1Orch
+    end
+    subgraph Phase2Committee [<b>Phase 2 Committee</b>]
+        direction TB
+        P2Orch[Phase 2 Orchestrator<br/>Two-stage Senior review<br/>Test validation then implementation<br/>Vote counting, Test pass/fail tracking]
+        TestAuthor[Test Author<br/>Writes tests first]
+        Engineer[Engineer<br/>Implements solution]
+        SeniorEng[Senior Engineer<br/>Stage 1: Test validation<br/>Stage 2: Code quality review]
+        P2Orch --> TestAuthor
+        P2Orch --> Engineer
+        P2Orch --> SeniorEng
+        TestAuthor -.-> P2Orch
+        Engineer -.-> P2Orch
+        SeniorEng -.-> P2Orch
+    end
+    subgraph Phase3Committee [<b>Phase 3 Committee</b>]
+        direction TB
+        P3Orch[Phase 3 Orchestrator<br/>BLOCKING/DEFERRED tracking<br/>PM approval authority]
+        Security[Security Specialist<br/>Concrete exploits only]
+        Performance[Performance Specialist<br/>Measurable impact only]
+        PM[Product Manager<br/>Ship/defer decisions]
+        P3Orch --> Security
+        P3Orch --> Performance
+        P3Orch --> PM
+        Security -.-> P3Orch
+        Performance -.-> P3Orch
+        PM -.-> P3Orch
+    end
+    style Start fill:#e1f5ff,color:#000
+    style ShipDirect fill:#c8e6c9,color:#000
+    style ShipFinal fill:#c8e6c9,color:#000
+    style PlanReport fill:#fff9c4,color:#000
+    style ImplReport fill:#fff9c4,color:#000
+    style ReleaseReport fill:#fff9c4,color:#000
+    style BlockingReport fill:#ffccbc,color:#000
+    style TopOrch fill:#f3e5f5,color:#000
+    style P1Orch fill:#e1bee7,color:#000
+    style P2Orch fill:#e1bee7,color:#000
+    style P3Orch fill:#e1bee7,color:#000
+    style Phase1Committee fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px,color:#000
+    style Phase2Committee fill:#e3f2fd,stroke:#2196f3,stroke-width:2px,color:#000
+    style Phase3Committee fill:#fff3e0,stroke:#ff9800,stroke-width:2px,color:#000
+    style TestValidation fill:#fff9c4,color:#000
+    style Implementation fill:#e3f2fd,color:#000
+```
+
+## Top-Level Orchestrator
+
+**Responsibilities:**
+
+- Manage phase transitions
+- Evaluate Phase 3 activation heuristics
+- Coordinate artifact handoffs
+- Manage Phase 2 ↔ 3 loop
+
+**State Machine:**
+
+```
+IDLE
+  │
+  ├─ receive_user_request()
+  │    │
+  │    ▼
+  └─→ PHASE_1_PLANNING
+       │
+       ├─ wait_for_phase_1_consensus()
+       │    │
+       │    ▼
+       └─→ PHASE_2_BUILDING
+            │
+            ├─ wait_for_phase_2_consensus()
+            │    │
+            │    ▼
+            └─→ EVALUATE_PHASE_3_TRIGGER
+                 │
+                 ├─ if should_activate_phase_3():
+                 │    │
+                 │    ▼
+                 │   PHASE_3_REFINING
+                 │    │
+                 │    ├─ wait_for_phase_3_verdict()
+                 │    │    │
+                 │    │    ├─ if has_blocking_issues():
+                 │    │    │    │
+                 │    │    │    └─→ PHASE_2_BUILDING (loop)
+                 │    │    │
+                 │    │    └─ else:
+                 │    │         │
+                 │    │         └─→ SHIPPED
+                 │    │
+                 │    └─→ (managed by orchestrator)
+                 │
+                 └─ else:
+                      │
+                      └─→ SHIPPED
+```
+
+## Phase 1 Planning Orchestrator
+
+**Responsibilities:**
+
+- Coordinate Planner, Architect, Critic
+- Track APPROVE/BLOCK votes
+- Enforce consensus rules
+- Track open questions
+
+**Protocol:**
+
+```python
+class Phase1Orchestrator:
+    def execute(self, user_request):
+        iteration = 0
+        max_iterations = 10  # Safety valve
+
+        # Initial draft
+        plan_draft = self.planner.create_initial_plan(user_request)
+
+        while iteration < max_iterations:
+            iteration += 1
+
+            # Architect provides expertise
+            arch_feedback = self.architect.review(plan_draft)
+
+            # Critic challenges assumptions
+            critic_feedback = self.critic.review(plan_draft, arch_feedback)
+
+            # Collect votes
+            votes = {
+                'planner': self.planner.vote(plan_draft),
+                'architect': self.architect.vote(plan_draft),
+                'critic': self.critic.vote(plan_draft)
+            }
+
+            # Check for consensus
+            if self.has_consensus(votes) and self.no_open_questions(plan_draft):
+                return self.finalize_plan_report(plan_draft)
+
+            # Track blocks
+            for agent, vote in votes.items():
+                if vote.status == 'BLOCK':
+                    if self.get_block_count(agent) >= 3:
+                        vote.escalate_to_non_blocking()
+
+            # Planner incorporates feedback
+            plan_draft = self.planner.revise(
+                plan_draft,
+                arch_feedback,
+                critic_feedback
+            )
+
+        raise Exception("Phase 1 failed to reach consensus")
+
+    def has_consensus(self, votes):
+        return all(v.status == 'APPROVE' for v in votes.values())
+
+    def no_open_questions(self, plan_draft):
+        return len(plan_draft.open_questions) == 0
+```
+
+## Phase 2 Building Orchestrator
+
+**Responsibilities:**
+
+- Coordinate Engineer, Test Author, Senior Engineer
+- Enforce TDD discipline (tests first, validated before implementation)
+- Track test pass/fail status
+- Track APPROVE/BLOCK votes
+- Manage two-stage Senior Engineer review (test validity, then implementation quality)
+
+**Protocol:**
+
+```python
+class Phase2Orchestrator:
+    def execute(self, plan_report, blocking_issues=None):
+        test_iteration = 0
+        impl_iteration = 0
+        max_test_iterations = 5  # Limit test revision loops
+        max_impl_iterations = 15  # More iterations for implementation
+
+        # Test Author defines tests first
+        test_suite = self.test_author.write_tests(plan_report, blocking_issues)
+
+        # Senior Engineer reviews tests for validity and plan coverage
+        while test_iteration < max_test_iterations:
+            test_review = self.senior_engineer.review_tests(
+                test_suite,
+                plan_report
+            )
+
+            if test_review.status == 'APPROVE':
+                break
+
+            # Track blocks (3-max rule applies here too)
+            if test_review.status == 'BLOCK':
+                if self.get_block_count('senior_engineer') >= 3:
+                    test_review.escalate_to_non_blocking()
+                    break
+
+            # Test Author revises based on feedback
+            test_suite = self.test_author.revise_tests(
+                test_suite,
+                test_review.feedback
+            )
+            test_iteration += 1
+
+        if test_iteration >= max_test_iterations:
+            raise Exception("Phase 2 test validation failed to reach consensus")
+
+        # Implementation loop with validated tests
+        while impl_iteration < max_impl_iterations:
+            impl_iteration += 1
+
+            # Engineer implements
+            implementation = self.engineer.implement(plan_report, test_suite)
+
+            # Run tests
+            test_results = self.run_tests(test_suite, implementation)
+
+            if not test_results.all_passing:
+                # Tests fail - Engineer must fix
+                continue
+
+            # Senior Engineer reviews implementation AND test suite together
+            sr_impl_review = self.senior_engineer.review_implementation(
+                implementation,
+                test_suite
+            )
+
+            # Collect votes
+            votes = {
+                'test_author': self.test_author.vote(test_suite, test_results),
+                'engineer': self.engineer.vote(implementation),
+                'senior_engineer': self.senior_engineer.vote(implementation, test_suite)
+            }
+
+            # Check for consensus
+            if self.has_consensus(votes):
+                return self.finalize_implementation_report(
+                    implementation,
+                    test_suite,
+                    test_results
+                )
+
+            # Track blocks (3-max rule)
+            for agent, vote in votes.items():
+                if vote.status == 'BLOCK':
+                    if self.get_block_count(agent) >= 3:
+                        vote.escalate_to_non_blocking()
+
+            # Handle refactor requests
+            if votes['senior_engineer'].status == 'BLOCK':
+                # Senior can require refactoring of BOTH tests and implementation
+                if sr_impl_review.requires_test_refactor:
+                    test_suite = self.test_author.refactor_tests(
+                        test_suite,
+                        sr_impl_review.test_feedback
+                    )
+                if sr_impl_review.requires_impl_refactor:
+                    implementation = self.engineer.refactor(
+                        implementation,
+                        sr_impl_review.impl_feedback
+                    )
+
+        raise Exception("Phase 2 implementation failed to reach consensus")
+```
+
+### Phase 2 Review Stages
+
+Phase 2 has two distinct Senior Engineer review moments:
+
+**Stage 1: Test Validation (before implementation)**
+
+Purpose: Ensure tests actually enforce the plan and would fail without implementation
+
+Senior Engineer checks:
+
+- Do these tests cover all requirements from plan.report?
+- Would these tests pass with empty/stub implementations? (always-pass smell)
+- Are edge cases from plan.report.risks_accepted tested?
+
+Outputs: APPROVE or BLOCK (counts toward 3-block limit)
+
+**Stage 2: Implementation Review (after tests pass)**
+
+Purpose: Ensure both tests and implementation are maintainable
+
+Senior Engineer checks:
+
+- Is the implementation readable and maintainable?
+- Are tests and implementation unnecessarily coupled?
+- Do test helpers/fixtures need extraction?
+- Are there overly large functions or unclear naming?
+
+Can require refactoring of tests, implementation, or both
+
+Outputs: APPROVE or BLOCK (counts toward same 3-block limit)
+
+**Why two stages?**
+
+- Stage 1 prevents wasted Engineer effort implementing to bad tests
+- Stage 2 ensures the complete test+implementation artifact is maintainable
+- Separates "do tests enforce correctness?" from "is code readable?"
+
+## Phase 3 Refining Orchestrator
+
+**Responsibilities:**
+
+- Coordinate Security Specialist, Performance Specialist, Product Manager
+- Track BLOCKING vs DEFERRED classifications
+- Enforce Product Manager approval authority
+
+**Protocol:**
+
+```python
+class Phase3Orchestrator:
+    def execute(self, plan_report, impl_report):
+        iteration = 0
+        max_iterations = 5
+
+        while iteration < max_iterations:
+            iteration += 1
+
+            # Specialists identify concerns
+            security_concerns = self.security_specialist.review(impl_report)
+            perf_concerns = self.performance_specialist.review(impl_report)
+
+            # Product Manager classifies each concern
+            classifications = self.product_manager.classify_concerns(
+                security_concerns,
+                perf_concerns,
+                plan_report
+            )
+
+            # Product Manager makes shipping decision
+            verdict = self.product_manager.shipping_verdict(classifications)
+
+            if verdict.status == 'APPROVED_TO_SHIP':
+                return self.finalize_release_report(
+                    blocking_issues=[],
+                    deferred_issues=classifications.deferred
+                )
+
+            # Has blocking issues - prepare for Phase 2 loop
+            return self.finalize_release_report(
+                blocking_issues=classifications.blocking,
+                deferred_issues=classifications.deferred
+            )
+
+        raise Exception("Phase 3 failed to reach shipping decision")
+```
+
+## Artifact Handoffs
+
+**Phase 1 → Phase 2:**
+
+```python
+plan_report = {
+    'goals': [...],
+    'non_goals': [...],
+    'constraints': [...],
+    'risks_accepted': [...],
+    'open_questions': [],  # Must be empty
+    'technical_approach': {...},
+    'consensus_votes': {
+        'planner': 'APPROVE',
+        'architect': 'APPROVE',
+        'critic': 'APPROVE'
+    }
+}
+```
+
+**Phase 2 → Phase 3:**
+
+```python
+implementation_report = {
+    'files_changed': 7,
+    'loc_delta': 450,
+    'touched_areas': ['auth', 'database'],
+    'test_coverage_summary': {...},
+    'notable_refactors': [...],
+    'plan_deviations': [...],
+    'known_limitations': [...],
+    'new_dependencies': ['jwt-library'],
+    'new_public_apis': ['/api/auth/login'],
+    'consensus_votes': {
+        'engineer': 'APPROVE',
+        'test_author': 'APPROVE',
+        'senior_engineer': 'APPROVE'
+    }
+}
+```
+
+**Phase 3 → Ship or Loop:**
+
+```python
+release_report = {
+    'blocking_issues': [
+        {
+            'type': 'security',
+            'description': 'Input validation missing',
+            'raised_by': 'security_specialist'
+        }
+    ],
+    'deferred_issues': [
+        {
+            'type': 'performance',
+            'description': 'Add caching for user lookups',
+            'rationale': 'Not a resource leak, just optimization',
+            'deferred_by': 'product_manager'
+        }
+    ],
+    'verdict': 'BLOCKING_ISSUES_PRESENT' | 'APPROVED_TO_SHIP'
+}
+```
+
+## Phase 2 ↔ 3 Loop Logic
+
+When Phase 3 returns blocking issues:
+
+1. **Top-Level Orchestrator** extracts blocking issues from `release_report`
+2. Calls `Phase2Orchestrator.execute(plan_report, blocking_issues)`
+3. **Full Phase 2 committee reconvenes:**
+   - Test Author writes tests for blocking issue fixes
+   - Engineer implements fixes to pass tests
+   - Senior Engineer reviews fixes for maintainability
+   - All must APPROVE before returning to Phase 3
+4. New `implementation_report` sent to Phase 3
+5. Repeat until `release_report.blocking_issues == []`
+
+**Why full committee?** Prevents patchy fixes. Even a "simple" security fix must:
+
+- Have tests (Test Author)
+- Be implemented correctly (Engineer)
+- Be maintainable (Senior Engineer)
+
+This maintains the anti-slop guarantee throughout the loop.
+
+## Key Invariants
+
+1. **No phase can complete without unanimous APPROVE votes**
+2. **Each agent has max 3 BLOCKs before escalation**
+3. **Phase 1 cannot complete with open questions**
+4. **Phase 2 tests must pass Senior Engineer validation before implementation begins**
+5. **Phase 2 cannot complete with failing tests**
+6. **Phase 3 blocks ship if blocking_issues > 0**
+7. **Phase 3 → Phase 2 loop always reconvenes full committee**
+8. **Artifacts are immutable contracts between phases**
+
+## Error Handling
+
+**Max iterations exceeded:**
+
+- Surface to user with context of where consensus failed
+- Show remaining blocks and which agents are blocking
+- Allow user to override or provide additional guidance
+
+**Infinite Phase 2 ↔ 3 loop:**
+
+- Set max loop count (e.g., 3 passes through Phase 3)
+- After max loops, escalate to user with full context
+- Show history of blocking issues and attempted fixes
+
+**Agent disagreement deadlock:**
+
+- After 3 blocks, agents must escalate to "non-blocking concern"
+- If deadlock persists, surface to user for decision
