@@ -229,7 +229,7 @@ Blocking issues that must be fixed:
 
 Artifact: .power-trio/release.report.md
 
-Return to Phase 2 to address blocking issues, then re-run /trio-refine.
+Return to Phase 2 to address blocking issues, then re-run /power-trio:refine.
 
 BLOCKING_ISSUES:
 
@@ -243,7 +243,7 @@ BLOCKING_ISSUES:
 
 ## Output Format for Phase 2 Loop
 
-When BLOCKED, the output must include a parseable section for the /trio command to detect and loop:
+When BLOCKED, the output must include a parseable section for the /power-trio command to detect and loop:
 
 ```
 PHASE3_RESULT: BLOCKED

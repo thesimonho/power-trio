@@ -1,3 +1,7 @@
+---
+user-invocable: false
+---
+
 # Artifact Schemas
 
 Reference documentation for Power Trio artifact formats.

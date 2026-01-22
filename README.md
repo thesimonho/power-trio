@@ -36,6 +36,22 @@ Then install the plugin:
 /plugin install power-trio@thesimonho/artificial-jellybeans
 ```
 
+## Usage
+
+Run the full workflow:
+
+```
+/power-trio:start
+```
+
+Or run an individual phase:
+
+```
+/power-trio:plan
+/power-trio:build
+/power-trio:refine
+```
+
 ## Why Power Trio? (vs. Sequential Prompting)
 
 Advanced users might ask: "Why can't I just do Plan → Code → Review with good prompts?"

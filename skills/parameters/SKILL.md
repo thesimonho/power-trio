@@ -1,3 +1,7 @@
+---
+user-invocable: false
+---
+
 # Configuration and Parameter Values
 
 Centralized configuration for the Power Trio workflow. Reference this file for consistent settings. These values must be adhered to.

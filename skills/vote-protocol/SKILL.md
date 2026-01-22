@@ -1,3 +1,7 @@
+---
+user-invocable: false
+---
+
 # Vote Protocol
 
 Reference documentation for the Power Trio voting system.

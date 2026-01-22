@@ -1,3 +1,7 @@
+---
+user-invocable: false
+---
+
 # Clean Code
 
 Code is read much more often than it is written. Optimize for the reader.

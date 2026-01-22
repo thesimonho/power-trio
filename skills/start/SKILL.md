@@ -272,7 +272,7 @@ Unresolved blocking issues:
 [List issues]
 
 Options:
-1. Fix issues manually and run /trio-refine
+1. Fix issues manually and run /power-trio:refine
 2. Ship anyway (not recommended): [risks]
 3. Abort and revisit requirements
 
@@ -302,7 +302,7 @@ Unable to get tests passing after MAX_TEST_FIX_ATTEMPTS attempts.
 Failing tests:
 [List failures]
 
-Please investigate and fix manually, then run /trio-build.
+Please investigate and fix manually, then run /power-trio:build.
 ```
 
 ---

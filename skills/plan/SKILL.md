@@ -187,7 +187,7 @@ Plan approved by all committee members:
 
 Artifact: .power-trio/plan.report.md
 
-Ready for Phase 2: Building (run /trio-build)
+Ready for Phase 2: Building (run /power-trio:build)
 ```
 
 ## State Tracking
