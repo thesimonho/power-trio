@@ -1,7 +1,6 @@
 {
   "name": "power-trio",
   "description": "A committee of agents for planning, building, and refining.",
-  "version": "1.0.0",
   "author": {
     "name": "Simon Ho",
     "email": "simonho.ubc@gmail.com",
@@ -9,6 +8,5 @@
   },
   "homepage": "https://github.com/thesimonho/power-trio",
   "repository": "https://github.com/thesimonho/power-trio",
-  "keywords": ["workflow", "productivity"],
-  "category": "development"
+  "keywords": ["workflow", "productivity"]
 }
