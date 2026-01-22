@@ -7,6 +7,7 @@
     "email": "simonho.ubc@gmail.com",
     "url": "https://www.simonho.ca"
   },
+  "homepage": "https://github.com/thesimonho/power-trio",
   "repository": "https://github.com/thesimonho/power-trio",
   "keywords": ["workflow", "productivity"],
   "category": "development"
