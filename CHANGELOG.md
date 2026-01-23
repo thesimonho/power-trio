@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/thesimonho/power-trio/compare/v1.1.0...v1.1.1) (2026-01-23)
+
+
+### Bug Fixes
+
+* use git diff for implementation review ([540362d](https://github.com/thesimonho/power-trio/commit/540362d82b5dadc3d5ca9c10ca06b74ec12b37e8))
+
 ## [1.1.0](https://github.com/thesimonho/power-trio/compare/v1.0.1...v1.1.0) (2026-01-23)
 
 
