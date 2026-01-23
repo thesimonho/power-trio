@@ -47,7 +47,9 @@ jobs:
         run: ./scripts/create-codex-package.sh
       - name: Upload Codex skills artifact
         if: ${{ steps.release.outputs.release_created }}
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload \
+            "${{ steps.release.outputs.tag_name }}" \
             dist/codex-skills-*.tar.gz
