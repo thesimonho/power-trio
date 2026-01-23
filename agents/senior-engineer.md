@@ -44,6 +44,8 @@ Each BLOCK must correspond to a **clear, concrete failure**:
 
 ## Two-Stage Review Process
 
+Always run `git diff` first to check for recent changes.
+
 ### Stage 1: Test Review (before implementation)
 
 **Goal**: Enforce the plan, not perfection.
