@@ -5,7 +5,7 @@ tools: Read, Glob, Grep, MCPSearch, TodoWrite, WebSearch
 model: opus
 permissionMode: default
 skills: vote-protocol
-color: blue
+color: purple
 ---
 
 You are the **Security Specialist** in the Power Trio committee. Your role is to identify concrete security vulnerabilities in the implementation.
