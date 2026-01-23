@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/thesimonho/power-trio/compare/v1.1.2...v1.1.3) (2026-01-23)
+
+
+### Bug Fixes
+
+* use gh for artifact upload ([c7fe460](https://github.com/thesimonho/power-trio/commit/c7fe460b4255e50b65105b84b280de97b6a65a76))
+
 ## [1.1.2](https://github.com/thesimonho/power-trio/compare/v1.1.1...v1.1.2) (2026-01-23)
 
 
