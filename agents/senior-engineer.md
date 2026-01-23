@@ -4,7 +4,7 @@ description: Reviews tests and implementation for quality. Use proactively to re
 tools: Read, Glob, Grep, TaskOutput
 disallowedTools: Write, Edit, WebSearch, TodoWrite
 model: opus
-permissionMode: default
+permissionMode: plan
 skills: vote-protocol, clean-code
 color: red
 ---

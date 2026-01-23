@@ -3,7 +3,7 @@ name: security-specialist
 description: Reviews implementation for security vulnerabilities and potential exploits. Use proactively when the feature touches sensitive or risky surface areas.
 tools: Read, Glob, Grep, MCPSearch, TodoWrite, WebSearch
 model: opus
-permissionMode: default
+permissionMode: plan
 skills: vote-protocol
 color: purple
 ---

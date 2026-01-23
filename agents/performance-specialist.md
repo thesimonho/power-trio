@@ -3,7 +3,7 @@ name: performance-specialist
 description: Reviews implementation for issues that negatively impact performance. Use proactively when the feature affects user experience, or lies on the applications critical path.
 tools: Read, Glob, Grep, MCPSearch, TodoWrite, WebSearch
 model: sonnet
-permissionMode: default
+permissionMode: plan
 skills: vote-protocol
 color: pink
 ---
