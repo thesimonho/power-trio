@@ -31,6 +31,10 @@ find dist/codex-skills/skills -name SKILL.md | while read -r file; do
       next
     }
 
+    in_frontmatter && /^model:[[:space:]]*/ {
+      next
+    }
+
     frontmatter_done && body_started == 0 {
       body_started = 1
 
