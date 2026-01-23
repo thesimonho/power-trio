@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/thesimonho/power-trio/compare/v1.1.1...v1.1.2) (2026-01-23)
+
+
+### Bug Fixes
+
+* build script ([9db43e3](https://github.com/thesimonho/power-trio/commit/9db43e3573afdd191759b68338a7c4bfea447514))
+
 ## [1.1.1](https://github.com/thesimonho/power-trio/compare/v1.1.0...v1.1.1) (2026-01-23)
 
 
