@@ -269,10 +269,10 @@ Lines of code: [X]
 Sensitive areas: [list if any]
 
 [If sensitive areas or significant changes:]
-Recommend running Phase 3: Refining (/power-trio:refine)
+Recommend running Phase 3: Reviewing (/power-trio:review)
 
 [Otherwise:]
-Ready to ship or run Phase 3 for additional review.
+Ready to ship or run Phase 3 for additional assessment.
 ```
 
 ## Error Handling

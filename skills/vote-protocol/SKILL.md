@@ -59,9 +59,9 @@ Indicates the agent has concerns that must be addressed before proceeding.
 - Specific reason (not vague concerns)
 - What needs to change to get an APPROVE
 
-## 3-Block Escalation Rule
+## Block Escalation Rule
 
-To prevent infinite loops, each agent has a maximum of **3 blocks** per issue category.
+To prevent infinite loops, each agent has a maximum number of blocks per issue category. Refer to Parameters skill for the number of blocks.
 
 ### How It Works
 
@@ -71,7 +71,7 @@ To prevent infinite loops, each agent has a maximum of **3 blocks** per issue ca
 
 ### Escalation
 
-When an agent has blocked 3 times on the same general issue:
+When an agent has blocked too many times on the same general issue:
 
 1. The concern is converted to a **documented risk**
 2. The block becomes a **non-blocking APPROVE with noted risk**
@@ -81,7 +81,7 @@ When an agent has blocked 3 times on the same general issue:
 ### Example
 
 ```
-Architect blocked 3 times on: "Missing rate limiting"
+Architect blocked X times on: "Missing rate limiting"
 
 ESCALATION: Converting to documented risk.
 - Risk: "API endpoints lack rate limiting"
@@ -91,17 +91,17 @@ ESCALATION: Converting to documented risk.
 
 ## Consensus Requirements
 
-### Phase 1: Planning
+### Phase 1: Plan
 
 - All three agents (Planner, Architect, Critic) must APPROVE
 - Plan must have no unresolved Open Questions
 
-### Phase 2: Building
+### Phase 2: Build
 
 - Senior Engineer must APPROVE tests before implementation
 - Senior Engineer must APPROVE implementation before completion
 
-### Phase 3: Refining
+### Phase 3: Review
 
 - Product Manager determines final verdict (APPROVED_TO_SHIP or BLOCKED)
 - Security and Performance specialists provide findings, not votes

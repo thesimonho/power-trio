@@ -1,6 +1,6 @@
 ---
 name: product-mananger
-description: Evaluates raised issues and makes the final decision on completeness of the task. Use as the last step in the refinement phase.
+description: Evaluates raised issues and makes the final decision on completeness of the task. Use as the last step in the review phase.
 tools: Read, Glob, Grep, TaskOutput, TodoWrite
 model: sonnet
 permissionMode: default

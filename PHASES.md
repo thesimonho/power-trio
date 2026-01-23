@@ -128,11 +128,11 @@ Test Author writes tests first, Senior Engineer reviews tests to ensure they enf
 
 ---
 
-### Phase 3: Refining
+### Phase 3: Review
 
 **Activation Triggers:**
 
-Phase 3 activates if any of the following are true:
+Phase 3 automatically activates if any of the following are true:
 
 _Change Size:_
 

@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  A committee of agents for planning, building, and refining.
+  A committee of agents for planning, building, and reviewing.
 </p>
 
 ## Overview
@@ -49,7 +49,7 @@ Or run an individual phase:
 ```
 /power-trio:plan
 /power-trio:build
-/power-trio:refine
+/power-trio:review
 ```
 
 ## Why Power Trio? (vs. Sequential Prompting)
@@ -107,7 +107,7 @@ See [ORCHESTRATION.md](ORCHESTRATION.md) for the orchestration logic within and 
 - This mirrors high-functioning human teams: tests catch bugs, senior engineers catch both bad tests and future pain
 - The dual review points (tests then implementation) catch different failure modes while preserving TDD discipline
 
-### Phase 3: Refining
+### Phase 3: Reviewing
 
 **Goal:** Ensure production-readiness and validate the solution solves the original problem
 
@@ -198,7 +198,7 @@ Phase 2 and Phase 3 loop until consensus is reached. Phase 3 cannot hack in fixe
    - → Outputs `implementation.report`
    - → All agents output `APPROVE`
 
-4. **Phase 3 (Refining) - Triggered** (touches auth, a sensitive surface area):
+4. **Phase 3 (Reviewing) - Triggered** (touches auth, a sensitive surface area):
    - Security Specialist: "Need input validation, password complexity rules, and audit logging" → classified by PM
    - Performance Specialist: "Add caching for user lookups, implement connection pooling" → classified by PM
    - Product Manager: "Input validation is `BLOCKING`. Audit logging is `DEFERRED` for v2. Caching is `DEFERRED`—not a resource leak, just an optimization."

@@ -23,7 +23,7 @@ graph TD
     P2Consensus -->|Yes| ImplReport[implementation.report]
     ImplReport --> P3Trigger{Activate Phase 3?<br/>Check heuristics:<br/>- Files ≥ 5 or LOC ≥ 300<br/>- Sensitive areas<br/>- Risk signals<br/>- User override}
     P3Trigger -->|No| ShipDirect[SHIPPED]
-    P3Trigger -->|Yes| Phase3[Phase 3: Refining]
+    P3Trigger -->|Yes| Phase3[Phase 3: Reviewing]
     Phase3 --> Phase3Committee
     Phase3Committee --> PMVerdict{PM Verdict?}
     PMVerdict -->|APPROVED TO SHIP| ReleaseReport[release.report<br/>blocking_issues = 0]
@@ -120,7 +120,7 @@ IDLE
                  ├─ if should_activate_phase_3():
                  │    │
                  │    ▼
-                 │   PHASE_3_REFINING
+                 │   PHASE_3_REVIEWING
                  │    │
                  │    ├─ wait_for_phase_3_verdict()
                  │    │    │
@@ -365,7 +365,7 @@ class Phase2Orchestrator:
         return blocking_count == 1 and iteration >= EXPECTED_IMPL_CONVERGENCE
 ```
 
-### Phase 2 Review Stages
+### Phase 2 Senior Engineer Review Stages
 
 Phase 2 has two distinct Senior Engineer review moments:
 
@@ -416,7 +416,7 @@ Stage 2 (Implementation Review):
 - Approve if code is readable, correct, and test-covered (even if it could be cleaner)
 - Prefer one blocking refactor over many small ones
 
-## Phase 3 Refining Orchestrator
+## Phase 3 Review Orchestrator
 
 **Responsibilities:**
 

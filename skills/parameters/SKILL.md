@@ -29,7 +29,7 @@ Centralized configuration for the Power Trio workflow. Reference this file for c
 | `EXPECTED_TEST_CONVERGENCE` | 2     | Expected maximum test iterations for normal cases           |
 | `EXPECTED_IMPL_CONVERGENCE` | 3     | Expected maximum implementation iterations for normal cases |
 
-### Phase 3: Refining
+### Phase 3: Reviewing
 
 | Parameter          | Value | Description                                       |
 | ------------------ | ----- | ------------------------------------------------- |

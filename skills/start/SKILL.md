@@ -1,12 +1,12 @@
 ---
-description: Execute the complete Power Trio workflow: Plan → Build → Refine. Use proactively when developing a new feature from scratch.
+description: Execute the complete Power Trio workflow: Plan → Build → Review. Use proactively when developing a new feature from scratch.
 disable-model-invocation: false
 user-invocable: true
 context: fork
 agent: orchestrator
 ---
 
-Execute the complete Power Trio workflow: Plan → Build → Refine.
+Execute the complete Power Trio workflow: Plan → Build → Review.
 
 ## Configuration
 
@@ -30,7 +30,7 @@ If no arguments provided, ask the user what they want to build.
 ## Workflow Overview
 
 ```
-Phase 1: Planning ──→ Phase 2: Building ──→ [Phase 3: Refining]
+Phase 1: Planning ──→ Phase 2: Building ──→ [Phase 3: Reviewing]
     │                      │                        │
     ▼                      ▼                        ▼
 plan.report.md      implementation.report.md   release.report.md
@@ -71,7 +71,7 @@ Execute the trio-plan workflow inline:
 4. Collect votes, iterate until consensus (max `MAX_PLANNING_ITERATIONS` iterations)
 5. Write `.power-trio/plan.report.md`
 
-**See trio-plan.md for detailed orchestration steps.**
+**See power-trio:plan skill for detailed orchestration steps.**
 
 After Phase 1 completes, announce:
 
@@ -105,7 +105,7 @@ Execute the trio-build workflow inline:
 Task(subagent_type="power-trio:engineer", prompt="Fix these blocking issues from Phase 3 review, then ensure all tests still pass:\n\nBlocking Issues:\n[BLOCKING_ISSUES_JSON]\n\nCurrent Implementation:\n[FILES]\n\nFix each issue and run tests.")
 ```
 
-**See trio-build.md for detailed orchestration steps.**
+**See power-trio:build skill for detailed orchestration steps.**
 
 After Phase 2 completes, announce:
 
@@ -150,15 +150,15 @@ Read(file_path=".power-trio/implementation.report.md")
 
 ### 4. User Override
 
-- User explicitly requested refinement phase
-- User passed `--refine` flag
+- User explicitly requested review phase
+- User passed `--review` flag
 
 **Phase 3 is SKIPPED if ALL of these are true:**
 
 - Files changed < `FILES_CHANGED_THRESHOLD` AND LOC < `LOC_CHANGED_THRESHOLD`
 - No sensitive areas touched
 - No new external exposure
-- User explicitly skipped with `--no-refine`
+- User explicitly skipped with `--no-review`
 
 Announce decision:
 
@@ -176,15 +176,15 @@ If SKIPPED, proceed to Final Output.
 
 ---
 
-## PHASE 3: Refining (if triggered)
+## PHASE 3: Review (if triggered)
 
-Execute the trio-refine workflow inline:
+Execute the review workflow inline:
 
 1. Invoke `power-trio:security-specialist` and `power-trio:performance-specialist` IN PARALLEL
 2. Invoke `power-trio:product-manager` to classify and decide
 3. Write `.power-trio/release.report.md`
 
-**See trio-refine.md for detailed orchestration steps.**
+**See the power-trio:review skill for detailed orchestration steps.**
 
 Parse the verdict from product-manager output.
 
@@ -234,7 +234,7 @@ When workflow completes successfully:
 
 - [x] Phase 1: Planning - Consensus in [X] iterations
 - [x] Phase 2: Building - Approved in [X] iterations
-- [x/skipped] Phase 3: Refining - [APPROVED_TO_SHIP | Skipped: reason]
+- [x/skipped] Phase 3: Reviewing - [APPROVED_TO_SHIP | Skipped: reason]
 
 ## Phase 2↔3 Loops
 
@@ -272,7 +272,7 @@ Unresolved blocking issues:
 [List issues]
 
 Options:
-1. Fix issues manually and run /power-trio:refine
+1. Fix issues manually and run /power-trio:review
 2. Ship anyway (not recommended): [risks]
 3. Abort and revisit requirements
 

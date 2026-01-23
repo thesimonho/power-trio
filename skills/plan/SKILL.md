@@ -19,7 +19,7 @@ Key parameters for this phase:
 
 ---
 
-You are orchestrating **Phase 1: Planning**. This phase uses three agents to create a consensus-approved plan through deliberation and iterative refinement.
+You are orchestrating **Phase 1: Planning**. This phase uses three agents to create a consensus-approved plan through deliberation and iterative revision.
 
 ## Task
 
@@ -31,7 +31,7 @@ If no arguments provided, ask the user what they want to plan.
 
 | Agent                  | Role                                     |
 | ---------------------- | ---------------------------------------- |
-| `power-trio:planner`   | Creates and refines the plan             |
+| `power-trio:planner`   | Creates and revises the plan             |
 | `power-trio:architect` | Technical expertise and feasibility      |
 | `power-trio:critic`    | Challenges assumptions, identifies risks |
 
