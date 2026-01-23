@@ -34,3 +34,20 @@ jobs:
           git tag -a v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} -m "Release v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}"
           git push origin v${{ steps.release.outputs.major }}
           git push origin v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}
+      - name: Build Codex skills
+        if: ${{ steps.release.outputs.release_created }}
+        run: ./scripts/build-codex-skills.sh
+      - name: Rewrite Codex frontmatter
+        if: ${{ steps.release.outputs.release_created }}
+        run: ./scripts/rewrite-agent-frontmatter.sh
+      - name: Package Codex skills
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          RELEASE_PLEASE_VERSION: ${{ steps.release.outputs.version }}
+        run: ./scripts/create-codex-package.sh
+      - name: Upload Codex skills artifact
+        if: ${{ steps.release.outputs.release_created }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/codex-skills-*.tar.gz
