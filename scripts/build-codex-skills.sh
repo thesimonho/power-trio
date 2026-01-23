@@ -74,4 +74,20 @@ done
 #######################################
 shopt -s nullglob
 for agent_md in "$AGENTS_ROOT"/*.md; do
-  name="$(basename "$agent_md
+  name="$(basename "$agent_md" .md)"
+  skill_dir="$OUT_SKILLS_DIR/$name"
+  mkdir -p "$skill_dir"
+  cp "$agent_md" "$skill_dir/SKILL.md"
+done
+
+#######################################
+# Create codex-skills.json manifest
+#######################################
+cat > "$STAGING_DIR/codex-skills.json" <<EOF
+{
+  "version": "$VERSION",
+  "skills": "skills/"
+}
+EOF
+
+echo "✓ Built codex-skills bundle v$VERSION -> $STAGING_DIR"
