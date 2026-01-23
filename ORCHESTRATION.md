@@ -236,6 +236,7 @@ class Phase1Orchestrator:
 - Track test pass/fail status
 - Track APPROVE/BLOCK votes
 - Manage two-stage Senior Engineer review (test validity, then implementation quality)
+- **Enforce execution constraints**: issue-scoped iteration, blocking issue limits, convergence expectations
 
 **Protocol:**
 
@@ -244,8 +245,8 @@ class Phase2Orchestrator:
     def execute(self, plan_report, blocking_issues=None):
         test_iteration = 0
         impl_iteration = 0
-        max_test_iterations = 5  # Limit test revision loops
-        max_impl_iterations = 15  # More iterations for implementation
+        max_test_iterations = MAX_TEST_ITERATIONS  # From parameters skill
+        max_impl_iterations = MAX_IMPL_ITERATIONS  # From parameters skill
 
         # Test Author defines tests first
         test_suite = self.test_author.write_tests(plan_report, blocking_issues)
@@ -254,22 +255,28 @@ class Phase2Orchestrator:
         while test_iteration < max_test_iterations:
             test_review = self.senior_engineer.review_tests(
                 test_suite,
-                plan_report
+                plan_report,
+                stage='TEST_REVIEW'
             )
 
             if test_review.status == 'APPROVE':
                 break
 
-            # Track blocks (3-max rule applies here too)
+            # Enforce blocking issue limit per iteration
             if test_review.status == 'BLOCK':
-                if self.get_block_count('senior_engineer') >= 3:
+                if len(test_review.blocking_issues) > MAX_BLOCKING_ISSUES_PER_ITERATION_SE:
+                    # Senior Engineer exceeded limit, keep only top issues
+                    test_review.blocking_issues = test_review.blocking_issues[:MAX_BLOCKING_ISSUES_PER_ITERATION_SE]
+
+                # Track blocks (MAX_BLOCKS_PER_AGENT rule)
+                if self.get_block_count('senior_engineer') >= MAX_BLOCKS_PER_AGENT:
                     test_review.escalate_to_non_blocking()
                     break
 
-            # Test Author revises based on feedback
-            test_suite = self.test_author.revise_tests(
+            # Issue-scoped iteration: Test Author revises only affected tests
+            test_suite = self.test_author.revise_tests_targeted(
                 test_suite,
-                test_review.feedback
+                blocking_issues=test_review.blocking_issues  # Only the specific issues
             )
             test_iteration += 1
 
@@ -293,8 +300,15 @@ class Phase2Orchestrator:
             # Senior Engineer reviews implementation AND test suite together
             sr_impl_review = self.senior_engineer.review_implementation(
                 implementation,
-                test_suite
+                test_suite,
+                stage='IMPLEMENTATION_REVIEW'
             )
+
+            # Enforce blocking issue limit per iteration
+            if sr_impl_review.status == 'BLOCK':
+                if len(sr_impl_review.blocking_issues) > MAX_BLOCKING_ISSUES_PER_ITERATION_SE:
+                    # Senior Engineer exceeded limit, keep only top issues
+                    sr_impl_review.blocking_issues = sr_impl_review.blocking_issues[:MAX_BLOCKING_ISSUES_PER_ITERATION_SE]
 
             # Collect votes
             votes = {
@@ -311,27 +325,44 @@ class Phase2Orchestrator:
                     test_results
                 )
 
-            # Track blocks (3-max rule)
+            # Loop termination bias: Check if close to consensus
+            if self.close_to_consensus(votes, iteration=impl_iteration):
+                # Prefer approve with noted limitations
+                return self.finalize_with_limitations(
+                    implementation,
+                    test_suite,
+                    test_results,
+                    noted_limitations=self.extract_non_blocking_concerns(votes)
+                )
+
+            # Track blocks (MAX_BLOCKS_PER_AGENT rule)
             for agent, vote in votes.items():
                 if vote.status == 'BLOCK':
-                    if self.get_block_count(agent) >= 3:
+                    if self.get_block_count(agent) >= MAX_BLOCKS_PER_AGENT:
                         vote.escalate_to_non_blocking()
 
-            # Handle refactor requests
+            # Handle refactor requests with issue-scoped iteration
             if votes['senior_engineer'].status == 'BLOCK':
                 # Senior can require refactoring of BOTH tests and implementation
+                # But only for specific blocking issues (max MAX_BLOCKING_ISSUES_PER_ITERATION_SE)
                 if sr_impl_review.requires_test_refactor:
-                    test_suite = self.test_author.refactor_tests(
+                    test_suite = self.test_author.refactor_tests_targeted(
                         test_suite,
-                        sr_impl_review.test_feedback
+                        blocking_issues=sr_impl_review.test_blocking_issues
                     )
                 if sr_impl_review.requires_impl_refactor:
-                    implementation = self.engineer.refactor(
+                    implementation = self.engineer.refactor_targeted(
                         implementation,
-                        sr_impl_review.impl_feedback
+                        blocking_issues=sr_impl_review.impl_blocking_issues
                     )
 
         raise Exception("Phase 2 implementation failed to reach consensus")
+
+    def close_to_consensus(self, votes, iteration):
+        """Check if we're close enough to consensus to apply termination bias"""
+        blocking_count = sum(1 for v in votes.values() if v.status == 'BLOCK')
+        # If only 1 agent blocking and we're past expected convergence, consider terminating
+        return blocking_count == 1 and iteration >= EXPECTED_IMPL_CONVERGENCE
 ```
 
 ### Phase 2 Review Stages
@@ -370,6 +401,20 @@ Outputs: APPROVE or BLOCK (counts toward same 3-block limit)
 - Stage 1 prevents wasted Engineer effort implementing to bad tests
 - Stage 2 ensures the complete test+implementation artifact is maintainable
 - Separates "do tests enforce correctness?" from "is code readable?"
+
+**Efficiency constraints per stage:**
+
+Stage 1 (Test Review):
+
+- Tests are sufficient if they cover success criteria and representative edge cases
+- Do NOT require exhaustive enumeration or perfect structure
+- Goal: "Will fail without correct implementation, pass with correct implementation"
+
+Stage 2 (Implementation Review):
+
+- Block only if code is hard to understand, overly complex, or error-prone
+- Approve if code is readable, correct, and test-covered (even if it could be cleaner)
+- Prefer one blocking refactor over many small ones
 
 ## Phase 3 Refining Orchestrator
 

@@ -20,12 +20,14 @@ Centralized configuration for the Power Trio workflow. Reference this file for c
 
 ### Phase 2: Building
 
-| Parameter               | Value | Description                                         |
-| ----------------------- | ----- | --------------------------------------------------- |
-| `MAX_TEST_ITERATIONS`   | 5     | Maximum rounds of test revision                     |
-| `MAX_IMPL_ITERATIONS`   | 10    | Maximum rounds of implementation revision           |
-| `MAX_TEST_FIX_ATTEMPTS` | 5     | Maximum attempts to fix failing tests               |
-| `MAX_BLOCKS_PER_AGENT`  | 3     | Blocks before escalating concern to documented risk |
+| Parameter                   | Value | Description                                                           |
+| --------------------------- | ----- | --------------------------------------------------------------------- |
+| `MAX_TEST_ITERATIONS`       | 2     | Maximum rounds of test revision (expected convergence: 1-2 iters)     |
+| `MAX_IMPL_ITERATIONS`       | 5     | Maximum rounds of implementation revision (expected convergence: 2-5) |
+| `MAX_TEST_FIX_ATTEMPTS`     | 3     | Maximum attempts to fix failing tests                                 |
+| `MAX_BLOCKS_PER_AGENT`      | 3     | Blocks before escalating concern to documented risk                   |
+| `EXPECTED_TEST_CONVERGENCE` | 2     | Expected maximum test iterations for normal cases                     |
+| `EXPECTED_IMPL_CONVERGENCE` | 5     | Expected maximum implementation iterations for normal cases           |
 
 ### Phase 3: Refining
 

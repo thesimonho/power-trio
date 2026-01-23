@@ -107,8 +107,20 @@ Implementation Review Authority (after implementation):
 - Code meets maintainability standards (Senior Engineer approves)
 - Implementation satisfies Phase 1 plan (Engineer confirms, committee concurs)
 - Each agent outputs: `APPROVE` or `BLOCK (with specific reason)`
-- Each agent has maximum 3 blocks available before they must escalate to "non-blocking concern"
+- Each agent has maximum `MAX_BLOCKS_PER_AGENT` blocks available before they must escalate to "non-blocking concern"
 - All blocks must be resolved before proceeding
+
+**Execution Constraints (TDD Efficiency + Loop Control):**
+
+- **Senior Engineer**: Maximum `MAX_BLOCKS_PER_AGENT` blocking issues per iteration; blocks only for concrete failures, not style/polish
+- **Test Review**: Tests sufficient if they cover success criteria and representative edge cases (not exhaustive)
+- **Implementation Review**: Block only if code is hard to understand, overly complex, or error-prone
+- **Engineer**: Incremental fixes only - minimal targeted changes, no unrelated refactoring
+- **Orchestrator**: Issue-scoped iteration - re-invoke only blocking agents with targeted context
+- **Test Failures**: Require explicit root cause diagnosis, avoid blind retries
+- **Deviations**: Surface once, do not repeatedly block on same deviation
+- **Loop Termination**: Bias toward approval with noted limitations when close to consensus
+- **Expected convergence**: Test review `EXPECTED_TEST_CONVERGENCE` iterations, implementation `EXPECTED_IMPL_CONVERGENCE` iterations
 
 **Dynamic:**
 

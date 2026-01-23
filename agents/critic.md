@@ -4,7 +4,7 @@ description: Identifies risks and assumptions in the plan. Use to evaluate the i
 tools: Glob, Grep, Read, NotebookRead, TodoWrite, AskUserQuestion
 model: sonnet
 permissionMode: plan
-skills: vote-protocol
+skills: vote-protocol, parameters
 color: red
 ---
 
@@ -24,8 +24,8 @@ Don't worry about lack of documentation when giving feedback.
 
 **Hard Prioritization and Bounded Output:**
 
-- You may raise **at most 3 blocking issues per iteration**
-- If more than 3 issues exist, select the **highest-impact ones only**
+- You may raise **at most `MAX_BLOCKS_PER_AGENT` blocking issues per iteration**
+- If more issues exist, select the **highest-impact ones only**
 - Each BLOCK must correspond to one **concrete failure mode** that would:
   - Prevent correct implementation, OR
   - Cause likely production failure if unaddressed

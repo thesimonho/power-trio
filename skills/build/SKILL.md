@@ -12,12 +12,14 @@ Execute Phase 2: Building with the Power Trio committee using Test-Driven Develo
 
 ## Configuration
 
-Key parameters for this phase:
+Key parameters for this phase (see parameters skill):
 
-- `MAX_TEST_ITERATIONS`
-- `MAX_IMPL_ITERATIONS`
-- `MAX_TEST_FIX_ATTEMPTS`
-- `MAX_BLOCKS_PER_AGENT`
+- `MAX_TEST_ITERATIONS` - Maximum rounds of test revision
+- `MAX_IMPL_ITERATIONS` - Maximum rounds of implementation revision
+- `MAX_TEST_FIX_ATTEMPTS` - Maximum attempts to fix failing tests
+- `MAX_BLOCKS_PER_AGENT` - Maximum blocks per agent before escalation
+- `EXPECTED_TEST_CONVERGENCE` - Expected maximum test iterations
+- `EXPECTED_IMPL_CONVERGENCE` - Expected maximum implementation iterations
 
 ---
 
@@ -56,6 +58,23 @@ impl_iterations: 0
 block_counts: {test_author: 0, engineer: 0, senior_engineer: 0}
 ```
 
+## Execution Constraints (TDD Efficiency + Loop Control)
+
+1. **Issue-Scoped Iteration (Orchestrator)**
+   - Re-invoke only the agent(s) responsible for the block
+   - Provide only: the blocking concern and relevant code
+   - Do NOT re-run full reviews unless required by the fix
+
+2. **Loop Termination Bias**
+   - When close to consensus: prefer APPROVE with noted limitations over another BLOCK
+   - Prefer documenting cleanup as future task
+   - Assume Phase 3 exists to catch production-level concerns
+
+3. **Expected Convergence Envelope**
+   - Test creation + review: `EXPECTED_TEST_CONVERGENCE` iterations
+   - Implementation + review: `EXPECTED_IMPL_CONVERGENCE` iterations
+   - Long loops indicate over-blocking or over-scoping
+
 ---
 
 ## STAGE 1: Test Creation and Review
@@ -88,15 +107,16 @@ Parse senior-engineer's vote:
 
 1. Increment `block_counts.senior_engineer`
 2. Check escalation (`MAX_BLOCKS_PER_AGENT` blocks → convert to documented concern)
-3. Have test-author revise:
+3. **Issue-scoped iteration** - Have test-author revise with only the specific concern:
 
    ```
-   Task(subagent_type="power-trio:test-author", prompt="Revise tests to address this concern:\n\n[SENIOR ENGINEER'S CONCERN]\n\nPrevious tests:\n[CURRENT TESTS]\n\nUpdate the tests and provide the revised specification.")
+   Task(subagent_type="power-trio:test-author", prompt="Revise tests to address this specific concern:\n\n[SENIOR ENGINEER'S BLOCKING CONCERN - max MAX_BLOCKING_ISSUES_PER_ITERATION_SE issues]\n\nMake minimal, targeted changes. Do NOT refactor unrelated tests.\n\nCurrent tests:\n[ONLY THE AFFECTED TEST(S)]\n\nUpdate the tests and provide the revised specification.")
    ```
 
-4. Loop back to Step 1.2
+4. Loop back to Step 1.2 (re-invoke only senior-engineer with targeted context)
 
 **Maximum test iterations: `MAX_TEST_ITERATIONS`**
+**Expected convergence: `EXPECTED_TEST_CONVERGENCE` iterations**
 
 ---
 
@@ -112,13 +132,15 @@ Task(subagent_type="power-trio:engineer", prompt="Implement code to make these a
 
 ### Step 2.2: Verify Tests Pass
 
-The engineer should run tests. If they report failures, have them fix:
+The engineer should run tests. If they report failures, require diagnosis:
 
 ```
-Task(subagent_type="power-trio:engineer", prompt="Tests are failing. Fix the implementation.\n\nTest failures:\n[FAILURE OUTPUT]\n\nCurrent implementation:\n[ENGINEER'S CODE]\n\nFix the code and run tests again.")
+Task(subagent_type="power-trio:engineer", prompt="Tests are failing. Before fixing, diagnose the root cause.\n\nTest failures:\n[FAILURE OUTPUT]\n\nCurrent implementation:\n[ENGINEER'S CODE]\n\nExplicitly state:\n1. Root cause of the failure\n2. Whether this indicates: bug in implementation, flaw in test, or mismatch with plan\n3. Your fix approach\n\nThen fix the code and run tests again. Avoid blind retries - each attempt must add new understanding.")
 ```
 
 Loop until tests pass (max `MAX_TEST_FIX_ATTEMPTS` attempts).
+
+**If tests never pass after `MAX_TEST_FIX_ATTEMPTS`**: stop and report blocker to user.
 
 ### Step 2.3: Code Review
 
@@ -138,15 +160,20 @@ Parse senior-engineer's vote:
 
 1. Increment `block_counts.senior_engineer`
 2. Check escalation (`MAX_BLOCKS_PER_AGENT` blocks → convert to documented concern)
-3. Have engineer fix:
+3. **Issue-scoped iteration** - Have engineer fix with only the specific concern:
 
    ```
-   Task(subagent_type="power-trio:engineer", prompt="Address this code review feedback:\n\n[SENIOR ENGINEER'S CONCERN]\n\nCurrent implementation:\n[CURRENT CODE]\n\nFix the issues and run tests to ensure nothing broke.")
+   Task(subagent_type="power-trio:engineer", prompt="Address this specific code review feedback:\n\n[SENIOR ENGINEER'S BLOCKING CONCERN - max MAX_BLOCKING_ISSUES_PER_ITERATION_SE issues]\n\nMake minimal, targeted changes. Do NOT refactor unrelated code.\n\nCurrent implementation:\n[ONLY THE AFFECTED CODE]\n\nFix the issues surgically and run tests to ensure nothing broke.")
    ```
 
-4. Loop back to Step 2.3
+4. Loop back to Step 2.3 (re-invoke only senior-engineer with targeted context)
+
+**If deviation from plan**: Surface once as documented deviation. Do not repeatedly block.
+
+**Loop termination bias**: When close to consensus, prefer APPROVE with noted limitations.
 
 **Maximum implementation iterations: `MAX_IMPL_ITERATIONS`**
+**Expected convergence: `EXPECTED_IMPL_CONVERGENCE` iterations**
 
 ---
 
