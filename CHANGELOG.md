@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.1.0](https://github.com/thesimonho/power-trio/compare/v1.0.1...v1.1.0) (2026-01-23)
+
+
+### Features
+
+* add subagent todolists ([8e7f0c9](https://github.com/thesimonho/power-trio/commit/8e7f0c92936190956b5686f3a7b0ff3d71cedcfc))
+
+
+### Bug Fixes
+
+* ignore notes about documentation ([9896c48](https://github.com/thesimonho/power-trio/commit/9896c48bfd9972b433783e187dcf800a42f0be71))
+* reduce workload of building phase ([639dac8](https://github.com/thesimonho/power-trio/commit/639dac84af677e2a52eece0b6c1faeb2bc2246bb))
+* reduce workload of planning phase ([65af489](https://github.com/thesimonho/power-trio/commit/65af489bbf004e82a895adae0a8817e05cfbf61b))
+* reduce workload of refining phase ([7543158](https://github.com/thesimonho/power-trio/commit/7543158820f9bf9ccdfc8ef0a59ac83a1b89deff))
+* set agent to plan mode ([ae53e83](https://github.com/thesimonho/power-trio/commit/ae53e83711d095b1dbcf353653dd42b897bb6d91))
+
 ## [1.0.1](https://github.com/thesimonho/power-trio/compare/v1.0.0...v1.0.1) (2026-01-22)
 
 
