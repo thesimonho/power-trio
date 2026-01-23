@@ -5,13 +5,13 @@
 ```mermaid
 graph TD
     Start([User Request]) --> TopOrch[<b>Top-Level Orchestrator</b><br/>Phase sequencing<br/>Phase 3 activation heuristics<br/>Artifact handoffs<br/>Phase 2 ↔ 3 loop management]
-    TopOrch --> Phase1[Phase 1: Planning]
+    TopOrch --> Phase1[Phase 1: Plan]
     Phase1 --> Phase1Committee
     Phase1Committee --> P1Consensus{All APPROVE?<br/>Open questions = 0?}
     P1Consensus -->|No| P1Iterate[Iterate within committee<br/>Max 3 blocks per agent]
     P1Iterate --> Phase1Committee
     P1Consensus -->|Yes| PlanReport[plan.report]
-    PlanReport --> Phase2[Phase 2: Building]
+    PlanReport --> Phase2[Phase 2: Build]
     Phase2 --> Phase2Committee
     Phase2Committee --> TestValidation{Tests validated?<br/>Senior APPROVE?}
     TestValidation -->|No| TestRevision[Test Author revises<br/>Max 3 blocks from Senior]
@@ -23,7 +23,7 @@ graph TD
     P2Consensus -->|Yes| ImplReport[implementation.report]
     ImplReport --> P3Trigger{Activate Phase 3?<br/>Check heuristics:<br/>- Files ≥ 5 or LOC ≥ 300<br/>- Sensitive areas<br/>- Risk signals<br/>- User override}
     P3Trigger -->|No| ShipDirect[SHIPPED]
-    P3Trigger -->|Yes| Phase3[Phase 3: Reviewing]
+    P3Trigger -->|Yes| Phase3[Phase 3: Review]
     Phase3 --> Phase3Committee
     Phase3Committee --> PMVerdict{PM Verdict?}
     PMVerdict -->|APPROVED TO SHIP| ReleaseReport[release.report<br/>blocking_issues = 0]
@@ -105,12 +105,12 @@ IDLE
   ├─ receive_user_request()
   │    │
   │    ▼
-  └─→ PHASE_1_PLANNING
+  └─→ PHASE_1_PLAN
        │
        ├─ wait_for_phase_1_consensus()
        │    │
        │    ▼
-       └─→ PHASE_2_BUILDING
+       └─→ PHASE_2_BUILD
             │
             ├─ wait_for_phase_2_consensus()
             │    │
@@ -120,13 +120,13 @@ IDLE
                  ├─ if should_activate_phase_3():
                  │    │
                  │    ▼
-                 │   PHASE_3_REVIEWING
+                 │   PHASE_3_REVIEW
                  │    │
                  │    ├─ wait_for_phase_3_verdict()
                  │    │    │
                  │    │    ├─ if has_blocking_issues():
                  │    │    │    │
-                 │    │    │    └─→ PHASE_2_BUILDING (loop)
+                 │    │    │    └─→ PHASE_2_BUILD (loop)
                  │    │    │
                  │    │    └─ else:
                  │    │         │
@@ -139,7 +139,7 @@ IDLE
                       └─→ SHIPPED
 ```
 
-## Phase 1 Planning Orchestrator
+## Phase 1 Plan Orchestrator
 
 **Responsibilities:**
 
@@ -155,7 +155,7 @@ IDLE
 class Phase1Orchestrator:
     def execute(self, user_request):
         iteration = 0
-        max_iterations = MAX_PLANNING_ITERATIONS  # From parameters
+        max_iterations = MAX_PLAN_ITERATIONS  # From parameters
 
         # Initial draft
         plan_draft = self.planner.create_initial_plan(user_request)
@@ -227,7 +227,7 @@ class Phase1Orchestrator:
         return changes.affects_architecture or changes.affects_tech_choice or changes.affects_system_boundaries
 ```
 
-## Phase 2 Building Orchestrator
+## Phase 2 Build Orchestrator
 
 **Responsibilities:**
 

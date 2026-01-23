@@ -10,15 +10,15 @@ Centralized configuration for the Power Trio workflow. Reference this file for c
 
 ## Iteration Limits
 
-### Phase 1: Planning
+### Phase 1: Plan
 
-| Parameter                 | Value | Description                                                                                 |
-| ------------------------- | ----- | ------------------------------------------------------------------------------------------- |
-| `MAX_PLANNING_ITERATIONS` | 3     | Maximum rounds of plan revision before escalating to user (expected convergence: 1-3 iters) |
-| `MAX_BLOCKS_PER_AGENT`    | 3     | Blocks before escalating concern to documented risk                                         |
-| `MAX_OPEN_QUESTIONS`      | 2     | Maximum accepted open questions at completion (prefer 0, accept 1-2 if documented as risk)  |
+| Parameter              | Value | Description                                                                                 |
+| ---------------------- | ----- | ------------------------------------------------------------------------------------------- |
+| `MAX_PLAN_ITERATIONS`  | 3     | Maximum rounds of plan revision before escalating to user (expected convergence: 1-3 iters) |
+| `MAX_BLOCKS_PER_AGENT` | 3     | Blocks before escalating concern to documented risk                                         |
+| `MAX_OPEN_QUESTIONS`   | 2     | Maximum accepted open questions at completion (prefer 0, accept 1-2 if documented as risk)  |
 
-### Phase 2: Building
+### Phase 2: Build
 
 | Parameter                   | Value | Description                                                 |
 | --------------------------- | ----- | ----------------------------------------------------------- |
@@ -29,7 +29,7 @@ Centralized configuration for the Power Trio workflow. Reference this file for c
 | `EXPECTED_TEST_CONVERGENCE` | 2     | Expected maximum test iterations for normal cases           |
 | `EXPECTED_IMPL_CONVERGENCE` | 3     | Expected maximum implementation iterations for normal cases |
 
-### Phase 3: Reviewing
+### Phase 3: Review
 
 | Parameter          | Value | Description                                       |
 | ------------------ | ----- | ------------------------------------------------- |
@@ -78,10 +78,3 @@ Centralized configuration for the Power Trio workflow. Reference this file for c
 | --------------- | ------ | ------------------------------------ |
 | Default         | sonnet | Standard security review model       |
 | High-risk areas | opus   | Escalate to opus for sensitive areas |
-
-**High-risk areas triggering opus:**
-
-- Authentication / authorization
-- Cryptography
-- Secrets management
-- Multi-tenant or trust boundaries

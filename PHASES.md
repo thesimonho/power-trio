@@ -1,6 +1,6 @@
 ## The Three Phases (in detail)
 
-### Phase 1: Planning
+### Phase 1: Plan
 
 **Authority Boundaries:**
 
@@ -46,7 +46,7 @@ _Critic:_
 - **Planner**: Incremental revision only - minimal targeted changes, preserve unchanged sections verbatim
 - **Architect**: Conditional re-engagement - only re-review if revisions affect architecture, tech choice, or system boundaries
 - **Orchestrator**: Issue-scoped iteration - re-invoke only blocking agents with only their concern and relevant revised sections
-- **Expected convergence**: 1-3 iterations (max: `MAX_PLANNING_ITERATIONS`)
+- **Expected convergence**: 1-3 iterations (max: `MAX_PLAN_ITERATIONS`)
 
 **Dynamic:**
 
@@ -54,7 +54,7 @@ Planner drafts the approach, Architect provides expertise on technical decisions
 
 ---
 
-### Phase 2: Building
+### Phase 2: Build
 
 **Authority Boundaries:**
 

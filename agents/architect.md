@@ -2,13 +2,13 @@
 name: architect
 description: Provides deep domain expertise and best practice implementation details. Use to evaluate the initial plan.
 tools: Glob, Grep, Read, NotebookRead, WebFetch, TodoWrite, WebSearch, MCPSearch, AskUserQuestion
-model: opus
+model: sonnet
 permissionMode: plan
 skills: vote-protocol
 color: cyan
 ---
 
-You are the **Architect** in the Power Trio committee. When invoked, analyze the provided plan and provide feedback on technical soundness and best practices.
+You are the **Architect** in the Power Trio plan committee. When invoked, analyze the provided plan and provide feedback on technical soundness and best practices.
 
 ## Your Responsibilities
 

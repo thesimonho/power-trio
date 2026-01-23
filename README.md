@@ -14,9 +14,9 @@
 
 ## Overview
 
-Power Trio is a three-phase AI agent workflow system designed to deliver code that's fast to generate but maintains human-quality standards. Each phase operates as a committee of three specialized agents who iterate toward consensus before passing work to the next phase.
+Power Trio is a three-phase AI multi-agent system designed to deliver code quickly but maintains human-quality standards. Each phase operates as a committee of three specialized agents who iterate toward consensus before passing work to the next phase.
 
-The core insight: programming can happen faster with AI agents than humans, but the criticism of AI-generated code is "slop"—fast output that lacks quality. Power Trio addresses this by separating speed (Phase 2) from quality assurance (Phase 3), with clear planning upfront (Phase 1).
+The core insight: agents are fast, but the criticism of AI-generated code is "slop"—fast output that lacks quality. Power Trio addresses this by separating speed (Phase 2) from quality assurance (Phase 3), with clear planning upfront (Phase 1).
 
 **This is a constraint pipeline, not a reasoning pipeline.** Each phase narrows degrees of freedom, removes ambiguity, and converts opinions into enforceable rules.
 
@@ -24,7 +24,7 @@ The core insight: programming can happen faster with AI agents than humans, but 
 
 ### Claude Code
 
-Add the marketplace:
+Add the [marketplace](https://github.com/thesimonho/artificial-jellybeans):
 
 ```bash
 /plugin marketplace add thesimonho/artificial-jellybeans
@@ -41,15 +41,21 @@ Then install the plugin:
 Run the full workflow:
 
 ```
-/power-trio:start
+/power-trio:start <description>
 ```
 
-Or run an individual phase:
+Run the workflow without the review phase:
 
 ```
-/power-trio:plan
-/power-trio:build
-/power-trio:review
+/power-trio:start --no-review <description>
+```
+
+Or run an individual phases as needed:
+
+```
+/power-trio:plan <description>
+/power-trio:build <description>
+/power-trio:review <description>
 ```
 
 ## Why Power Trio? (vs. Sequential Prompting)
@@ -72,7 +78,7 @@ See [PHASES.md](PHASES.md) for the detailed description of each phase.
 
 See [ORCHESTRATION.md](ORCHESTRATION.md) for the orchestration logic within and between each phase.
 
-### Phase 1: Planning
+### Phase 1: Plan
 
 **Goal:** Reach consensus on what to build and how to build it
 
@@ -89,7 +95,7 @@ See [ORCHESTRATION.md](ORCHESTRATION.md) for the orchestration logic within and 
 - Critic prevents poorly-thought-out plans from reaching implementation
 - This mirrors effective design reviews: proposal, expertise, and challenge
 
-### Phase 2: Building
+### Phase 2: Build
 
 **Goal:** Implement the plan quickly without sacrificing long-term code quality
 
@@ -107,7 +113,7 @@ See [ORCHESTRATION.md](ORCHESTRATION.md) for the orchestration logic within and 
 - This mirrors high-functioning human teams: tests catch bugs, senior engineers catch both bad tests and future pain
 - The dual review points (tests then implementation) catch different failure modes while preserving TDD discipline
 
-### Phase 3: Reviewing
+### Phase 3: Review
 
 **Goal:** Ensure production-readiness and validate the solution solves the original problem
 
@@ -139,7 +145,7 @@ Each phase has a clear gating question:
 
 - **Phase 1:** Is this the right technical approach?
 - **Phase 2:** Is this implementation correct and maintainable?
-- **Phase 3:** Is this production-ready AND does it solve the original problem?
+- **Phase 3:** Is this production-ready?
 
 ### Anti-Slop at Multiple Levels
 
@@ -168,7 +174,7 @@ Phase 2 and Phase 3 loop until consensus is reached. Phase 3 cannot hack in fixe
 **Skip Power Trio for:**
 
 - Quick exploratory scripts or prototypes
-- Trivial file changes (< 5 files, < 300 LOC)
+- Trivial file changes
 - Non-production code or one-off utilities
 - When you need extreme speed over quality
 
@@ -183,14 +189,14 @@ Phase 2 and Phase 3 loop until consensus is reached. Phase 3 cannot hack in fixe
 
 1. **User request:** "Build an API endpoint for user authentication"
 
-2. **Phase 1 (Planning):**
+2. **Phase 1 (Plan):**
    - Planner: "Use JWT tokens with refresh token rotation"
    - Architect: "Consider rate limiting and account lockout policies"
    - Critic: `BLOCK` - "What about password reset flow? How do we handle token revocation?"
    - → Iterate until consensus, output `plan.report` with zero open questions
    - → All agents output `APPROVE`
 
-3. **Phase 2 (Building):**
+3. **Phase 2 (Build):**
    - Test Author: "Write tests for auth success, invalid credentials, rate limiting"
    - Engineer: Implements endpoint with tests passing
    - Senior Engineer: `BLOCK` - "This 200-line function needs to be broken up. Extract token generation logic."
@@ -198,7 +204,7 @@ Phase 2 and Phase 3 loop until consensus is reached. Phase 3 cannot hack in fixe
    - → Outputs `implementation.report`
    - → All agents output `APPROVE`
 
-4. **Phase 3 (Reviewing) - Triggered** (touches auth, a sensitive surface area):
+4. **Phase 3 (Review) - Triggered** (touches auth, a sensitive surface area):
    - Security Specialist: "Need input validation, password complexity rules, and audit logging" → classified by PM
    - Performance Specialist: "Add caching for user lookups, implement connection pooling" → classified by PM
    - Product Manager: "Input validation is `BLOCKING`. Audit logging is `DEFERRED` for v2. Caching is `DEFERRED`—not a resource leak, just an optimization."

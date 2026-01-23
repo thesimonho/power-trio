@@ -12,7 +12,7 @@ Execute the complete Power Trio workflow: Plan → Build → Review.
 
 Key parameters:
 
-- Phase 1: `MAX_PLANNING_ITERATIONS`, `MAX_BLOCKS_PER_AGENT`
+- Phase 1: `MAX_PLAN_ITERATIONS`, `MAX_BLOCKS_PER_AGENT`
 - Phase 2: `MAX_TEST_ITERATIONS`, `MAX_IMPL_ITERATIONS`, `MAX_TEST_FIX_ATTEMPTS`
 - Phase 3: `MAX_PHASE2_LOOPS`
 - Triggers: `FILES_CHANGED_THRESHOLD`, `LOC_CHANGED_THRESHOLD`
@@ -30,7 +30,7 @@ If no arguments provided, ask the user what they want to build.
 ## Workflow Overview
 
 ```
-Phase 1: Planning ──→ Phase 2: Building ──→ [Phase 3: Reviewing]
+Phase 1: Plan  ──→  Phase 2: Build  ──→  [Phase 3: Review]
     │                      │                        │
     ▼                      ▼                        ▼
 plan.report.md      implementation.report.md   release.report.md
@@ -61,14 +61,14 @@ Create a TODO list to keep user informed of progress
 
 ---
 
-## PHASE 1: Planning
+## PHASE 1: Plan
 
 Execute the trio-plan workflow inline:
 
 1. Invoke `power-trio:planner` to create initial plan
 2. Invoke `power-trio:architect` to provide domain expertise and feedback on the plan
 3. Invoke `power-trio:critic` to challenge assumptions and identify risks
-4. Collect votes, iterate until consensus (max `MAX_PLANNING_ITERATIONS` iterations)
+4. Collect votes, iterate until consensus (max `MAX_PLAN_ITERATIONS` iterations)
 5. Write `.power-trio/plan.report.md`
 
 **See power-trio:plan skill for detailed orchestration steps.**
@@ -76,17 +76,17 @@ Execute the trio-plan workflow inline:
 After Phase 1 completes, announce:
 
 ```
-PHASE 1 COMPLETE: Planning
+PHASE 1 COMPLETE: Plan
 
 Consensus reached. Plan approved by all committee members.
 Artifact: .power-trio/plan.report.md
 
-Proceeding to Phase 2: Building...
+Proceeding to Phase 2: Build...
 ```
 
 ---
 
-## PHASE 2: Building
+## PHASE 2: Build
 
 Execute the trio-build workflow inline:
 
@@ -110,7 +110,7 @@ Task(subagent_type="power-trio:engineer", prompt="Fix these blocking issues from
 After Phase 2 completes, announce:
 
 ```
-PHASE 2 COMPLETE: Building
+PHASE 2 COMPLETE: Build
 
 TDD workflow completed. Implementation approved.
 Artifact: .power-trio/implementation.report.md
@@ -232,9 +232,9 @@ When workflow completes successfully:
 
 ## Phases Executed
 
-- [x] Phase 1: Planning - Consensus in [X] iterations
-- [x] Phase 2: Building - Approved in [X] iterations
-- [x/skipped] Phase 3: Reviewing - [APPROVED_TO_SHIP | Skipped: reason]
+- [x] Phase 1: Plan - Consensus in [X] iterations
+- [x] Phase 2: Build - Approved in [X] iterations
+- [x/skipped] Phase 3: Review - [APPROVED_TO_SHIP | Skipped: reason]
 
 ## Phase 2↔3 Loops
 
@@ -284,7 +284,7 @@ Please advise how to proceed.
 ```
 Power Trio BLOCKED at Phase 1
 
-Unable to reach planning consensus after MAX_PLANNING_ITERATIONS iterations.
+Unable to reach plan consensus after MAX_PLAN_ITERATIONS iterations.
 
 Unresolved concerns:
 [List concerns by agent]
