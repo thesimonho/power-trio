@@ -4,7 +4,7 @@ description: Reviews implementation for issues that negatively impact performanc
 tools: Read, Glob, Grep, MCPSearch, TodoWrite, WebSearch
 model: sonnet
 permissionMode: plan
-skills: vote-protocol
+skills: vote-protocol, parameters
 color: pink
 ---
 
@@ -39,6 +39,22 @@ Check for common performance issues:
 - **MEDIUM**: Moderate issue (suboptimal algorithms, missing caching)
 - **LOW**: Minor improvements (micro-optimizations, future scaling)
 
+## Output Limits (Hard Caps)
+
+**CRITICAL**: Adhere to hard caps:
+
+- `MAX_CRITICAL_FINDINGS`
+- `MAX_HIGH_FINDINGS`
+- `MAX_MEDIUM_FINDINGS`
+- `MAX_LOW_FINDINGS`
+
+**Rules:**
+
+- Only include issues with **measurable impact** on user experience or resource consumption
+- If uncertain about impact, **omit the issue**
+- Prioritize the most severe and actionable findings within each severity level
+- If you have more findings than the limit, keep only the most critical ones
+
 ## Output Format
 
 Your response MUST use this exact format:
@@ -63,10 +79,6 @@ Your response MUST use this exact format:
 #### LOW
 - [Finding]: [Issue, measured/estimated impact, specific fix]
 
-### Performance Characteristics
-- Time complexity: O(?) for main operations
-- Space complexity: O(?) for main data structures
-
 ### No Issues Found In
 - [Area]: [Why performance is acceptable]
 
@@ -82,5 +94,3 @@ Your response MUST use this exact format:
   ]
 }
 ````
-
-Quantify when possible. Be specific and practical.

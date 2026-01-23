@@ -420,9 +420,11 @@ Stage 2 (Implementation Review):
 
 **Responsibilities:**
 
+- Run risk triage to determine which specialists to invoke
 - Coordinate Security Specialist, Performance Specialist, Product Manager
 - Track BLOCKING vs DEFERRED classifications
 - Enforce Product Manager approval authority
+- Optimize for speed and bounded output
 
 **Protocol:**
 
@@ -435,14 +437,39 @@ class Phase3Orchestrator:
         while iteration < max_iterations:
             iteration += 1
 
-            # Specialists identify concerns
-            security_concerns = self.security_specialist.review(impl_report)
-            perf_concerns = self.performance_specialist.review(impl_report)
+            # Step 0: Risk Triage (Fast Pre-filtering)
+            risk_assessment = self.triage_risk(impl_report)
+            # Returns: { security_risk: NONE|LOW|MEDIUM|HIGH,
+            #            performance_risk: NONE|LOW|MEDIUM|HIGH }
 
-            # Product Manager classifies each concern
+            # Select files for each specialist (max MAX_FILES_PER_SPECIALIST)
+            security_files = self.select_security_files(impl_report) if risk_assessment.security_risk != 'NONE' else []
+            perf_files = self.select_performance_files(impl_report) if risk_assessment.performance_risk != 'NONE' else []
+
+            # Step 1: Conditional Specialist Invocation
+            security_concerns = None
+            perf_concerns = None
+
+            if risk_assessment.security_risk != 'NONE':
+                # Select model based on risk areas
+                model = 'opus' if self.is_high_risk_security_area(impl_report) else 'sonnet'
+                security_concerns = self.security_specialist.review(
+                    impl_report,
+                    files=security_files,  # Max MAX_FILES_PER_SPECIALIST
+                    model=model
+                )
+
+            if risk_assessment.performance_risk != 'NONE':
+                perf_concerns = self.performance_specialist.review(
+                    impl_report,
+                    files=perf_files,  # Max MAX_FILES_PER_SPECIALIST
+                    model='sonnet'
+                )
+
+            # Step 2: Product Manager classifies concerns
             classifications = self.product_manager.classify_concerns(
-                security_concerns,
-                perf_concerns,
+                security_concerns or [],
+                perf_concerns or [],
                 plan_report
             )
 
@@ -462,6 +489,17 @@ class Phase3Orchestrator:
             )
 
         raise Exception("Phase 3 failed to reach shipping decision")
+
+    def is_high_risk_security_area(self, impl_report):
+        """Check if changes touch high-risk security areas requiring opus"""
+        high_risk_areas = [
+            'authentication', 'authorization', 'auth',
+            'crypto', 'cryptography', 'encryption',
+            'secret', 'secrets', 'credentials',
+            'multi-tenant', 'trust-boundary'
+        ]
+        touched_areas = impl_report.get('touched_areas', [])
+        return any(area in str(touched_areas).lower() for area in high_risk_areas)
 ```
 
 ## Artifact Handoffs

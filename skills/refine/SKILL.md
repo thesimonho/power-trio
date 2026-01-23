@@ -30,7 +30,7 @@ If no arguments provided, look for `.power-trio/implementation.report.md`. If th
 
 ### Setup
 
-Read the implementation report:
+Read the implementation report, if available:
 
 ```
 Read(file_path=".power-trio/implementation.report.md")
@@ -40,21 +40,91 @@ Extract the list of files changed from the report.
 
 ---
 
-## Step 1: Parallel Security and Performance Review
+## Step 0: Risk Triage (Fast Pre-filtering)
 
-**IMPORTANT**: Invoke BOTH specialists IN PARALLEL in a single message:
+**CRITICAL**: If theres an implementation report, run this step BEFORE invoking any specialists to avoid unnecessary work.
+
+Analyze the changed files to assess risk levels:
+
+```json
+{
+  "security_risk": "NONE" | "LOW" | "MEDIUM" | "HIGH",
+  "performance_risk": "NONE" | "LOW" | "MEDIUM" | "HIGH",
+  "reasoning": "1-2 sentences explaining the risk assessment"
+}
+```
+
+**Security Risk Assessment:**
+
+- **NONE**: No security-sensitive changes (documentation, tests, internal utilities)
+- **LOW**: Minor changes to existing validated flows
+- **MEDIUM**: New features with input handling, new API endpoints
+- **HIGH**: Authentication, authorization, cryptography, secrets, multi-tenant boundaries
+
+**Performance Risk Assessment:**
+
+- **NONE**: No performance-sensitive changes (documentation, UI copy, config)
+- **LOW**: Minor changes to non-critical paths
+- **MEDIUM**: New features in user-facing paths, new database queries
+- **HIGH**: Critical path changes, data structure changes, concurrency changes
+
+**Rules:**
+
+- If `security_risk == "NONE"`, **SKIP** the security specialist entirely
+- If `performance_risk == "NONE"`, **SKIP** the performance specialist entirely
+- If BOTH are "NONE", skip to Step 3 with empty findings
+
+**File Scope Selection (if specialist needed):**
+
+For each specialist that will run, select files based on risk level:
+
+- Extract changed files from implementation report
+- **Limit to `MAX_FILES_PER_SPECIALIST`** (defined in `skills/parameters/SKILL.md`)
+- Prioritize files based on:
+  - Security: Auth, API endpoints, data validation, secrets, crypto
+  - Performance: Hot paths, database queries, loops, large data structures
+- Pass only the selected files to the specialist (do NOT pass all changed files)
+
+---
+
+## Step 1: Conditional Specialist Review
+
+**IMPORTANT**: Only invoke specialists if their risk is NOT "NONE" (as determined in Step 0), or if there's no implementation report.
+
+**Model Selection:**
+
+- Use `model: "sonnet"` by default
+- Escalate to `model: "opus"` ONLY if changes touch:
+  - Authentication / authorization
+  - Cryptography
+  - Secrets management
+  - Multi-tenant or trust boundaries
+
+**IMPORTANT**: Invoke needed specialists IN PARALLEL in a single message (skip if risk = "NONE")
+
+**Security Specialist** (if needed):
 
 ```
-Task(subagent_type="power-trio:security-specialist", prompt="Review this implementation for security vulnerabilities. Focus on concrete, exploitable issues.\n\nImplementation Report:\n[IMPLEMENTATION.REPORT CONTENT]\n\nRead and analyze these files:\n[LIST OF FILES CHANGED]\n\nProvide findings in the specified format with severity levels and JSON summary.")
+Task(
+  subagent_type="power-trio:security-specialist",
+  prompt="Review this implementation for security vulnerabilities. Focus on concrete, exploitable issues.\n\nRisk Level: [security_risk]\n\nImplementation Report:\n[IMPLEMENTATION.REPORT CONTENT]\n\nRead and analyze ONLY these files (max [MAX_FILES_PER_SPECIALIST]):\n[SELECTED FILES FOR SECURITY]\n\nAdhere to output limits defined in skills/parameters/SKILL.md.\n\nProvide findings in the specified format with severity levels and JSON summary."
+)
+```
 
-Task(subagent_type="power-trio:performance-specialist", prompt="Review this implementation for performance issues. Focus on measurable impact.\n\nImplementation Report:\n[IMPLEMENTATION.REPORT CONTENT]\n\nRead and analyze these files:\n[LIST OF FILES CHANGED]\n\nProvide findings in the specified format with severity levels and JSON summary.")
+**Performance Specialist** (if needed):
+
+```
+Task(
+  subagent_type="power-trio:performance-specialist",
+  prompt="Review this implementation for performance issues. Focus on measurable impact.\n\nRisk Level: [performance_risk]\n\nImplementation Report:\n[IMPLEMENTATION.REPORT CONTENT]\n\nRead and analyze ONLY these files (max [MAX_FILES_PER_SPECIALIST]):\n[SELECTED FILES FOR PERFORMANCE]\n\nAdhere to output limits defined in skills/parameters/SKILL.md.\n\nProvide findings in the specified format with severity levels and JSON summary."
+)
 ```
 
 ---
 
 ## Step 2: Issue Classification
 
-Invoke product-manager with both reviews:
+Invoke product-manager with specialist reviews (or empty findings if skipped):
 
 ```
 Task(subagent_type="power-trio:product-manager", prompt="Classify these findings as BLOCKING or DEFERRED and make the shipping decision.\n\nSecurity Review:\n[SECURITY-SPECIALIST OUTPUT]\n\nPerformance Review:\n[PERFORMANCE-SPECIALIST OUTPUT]\n\nImplementation Report:\n[IMPLEMENTATION.REPORT CONTENT]\n\nClassify each finding and provide your verdict in the specified format.")
@@ -149,7 +219,7 @@ None
 
 ---
 
-Generated by Power Trio Phase 3: Refining
+Generated by Power Trio: Refining
 Security findings: [X]
 Performance findings: [X]
 Blocking: 0
@@ -159,9 +229,7 @@ Deferred: [X]
 Output success:
 
 ```
-Phase 3: Refining COMPLETE
-
-VERDICT: APPROVED_TO_SHIP
+Refining COMPLETE
 
 Security findings: [X] (0 blocking, [X] deferred)
 Performance findings: [X] (0 blocking, [X] deferred)
@@ -173,12 +241,16 @@ The implementation is ready to ship.
 
 ### If BLOCKED
 
-Create release.report.md with blocking status:
+Create release.report.md with blocking status
+
+**Artifact format:**
 
 ````markdown
 # Release Report
 
-...
+## Implementation Reviewed
+
+[Reference to implementation.report]
 
 ## Blocking Issues
 
@@ -198,7 +270,6 @@ Create release.report.md with blocking status:
   }
 ]
 ```
-````
 
 ## Verdict
 
@@ -210,15 +281,13 @@ Create release.report.md with blocking status:
 
 ---
 
-Generated by Power Trio Phase 3: Refining
-
-```
+Generated by Power Trio: Refining
+````
 
 Output blocking status:
 
 ```
-
-Phase 3: Refining COMPLETE
+Refining COMPLETE
 
 VERDICT: BLOCKED
 
@@ -233,11 +302,9 @@ Return to Phase 2 to address blocking issues, then re-run /power-trio:refine.
 
 BLOCKING_ISSUES:
 
-````
-
-```json
 [blocking issues array for Phase 2 consumption]
-````
+
+```
 
 ---
 
@@ -246,14 +313,18 @@ BLOCKING_ISSUES:
 When BLOCKED, the output must include a parseable section for the /power-trio command to detect and loop:
 
 ```
+
 PHASE3_RESULT: BLOCKED
 BLOCKING_ISSUES_JSON: [{"source": "...", "issue": "...", "fix_required": "..."}]
+
 ```
 
 When APPROVED:
 
 ```
+
 PHASE3_RESULT: APPROVED_TO_SHIP
+
 ```
 
 ## Error Handling

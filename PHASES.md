@@ -158,6 +158,14 @@ _Manual Override:_
 
 - User can force Phase 3 on or off
 
+**Optimization Strategy:**
+
+Phase 3 is optimized for speed and bounded output:
+
+1. **Step 0: Risk Triage** - Fast pre-filtering before invoking specialists
+2. **Conditional Specialist Invocation** - Skip specialists if risk = "NONE"
+3. **Narrow File Scope** - Max 5 files per specialist, prioritized by risk
+
 **Authority Boundaries:**
 
 _Security Specialist:_
@@ -192,12 +200,18 @@ _Product Manager:_
 
 **Consensus Rules:**
 
+- Risk triage determines which specialists to invoke
 - Security and Performance specialists identify concerns
 - Product Manager classifies each as BLOCKING or DEFERRED
 - Each agent has maximum 3 blocks available before they must escalate to "non-blocking concern"
 - All BLOCKING issues must be resolved
 - Phase completes only when Product Manager outputs: `APPROVED TO SHIP`
 
+**Performance Constraints:**
+
+- **Risk Triage**: Fast assessment, skip specialists if risk = "NONE"
+- **File Scope**: Maximum `MAX_FILES_PER_SPECIALIST` files per specialist
+
 **Dynamic:**
 
-Security and Performance specialists identify concerns and improvements. Product Manager challenges whether each concern is blocking: "Do we _really_ need all that for v1? What's the minimum to ship?" Committee reaches consensus on what's essential vs. nice-to-have. Essential improvements are sent back to Phase 2 committee for implementation with full rigor (tests first, code review, etc.). Loop between Phase 2 and Phase 3 continues until Phase 3 reaches consensus the code is ready to ship.
+Risk triage first assesses security and performance risk levels. Specialists are invoked conditionally based on risk. Each specialist reviews a limited, prioritized subset of files and produces bounded output. Product Manager challenges whether each concern is blocking: "Do we _really_ need all that for v1? What's the minimum to ship?" Committee reaches consensus on what's essential vs. nice-to-have. Essential improvements are sent back to Phase 2 committee for implementation with full rigor (tests first, code review, etc.). Loop between Phase 2 and Phase 3 continues until Phase 3 reaches consensus the code is ready to ship.
