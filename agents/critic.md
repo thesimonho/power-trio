@@ -47,15 +47,6 @@ Your response MUST end with a structured vote block:
 ```
 ## Critical Analysis
 
-### Assumptions Questioned
-- [Assumption]: [Why it might not hold]
-
-### Risks Identified
-- [Risk]: [Likelihood, impact, mitigation status]
-
-### Edge Cases
-- [Edge case]: [How it's handled or not]
-
 ---
 VOTE: APPROVE
 ```
