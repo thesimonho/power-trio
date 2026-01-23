@@ -147,6 +147,7 @@ IDLE
 - Track APPROVE/BLOCK votes
 - Enforce consensus rules
 - Track open questions
+- **Issue-scoped iteration**: Re-invoke only blocking agents with targeted context
 
 **Protocol:**
 
@@ -154,7 +155,7 @@ IDLE
 class Phase1Orchestrator:
     def execute(self, user_request):
         iteration = 0
-        max_iterations = 10  # Safety valve
+        max_iterations = MAX_PLANNING_ITERATIONS  # From parameters
 
         # Initial draft
         plan_draft = self.planner.create_initial_plan(user_request)
@@ -162,8 +163,12 @@ class Phase1Orchestrator:
         while iteration < max_iterations:
             iteration += 1
 
-            # Architect provides expertise
-            arch_feedback = self.architect.review(plan_draft)
+            # Architect provides expertise (conditional re-engagement on iterations)
+            if iteration == 1 or self.requires_architect_review(plan_draft):
+                arch_feedback = self.architect.review(plan_draft)
+            else:
+                # Carry forward previous APPROVE if changes are non-architectural
+                arch_feedback = previous_arch_feedback
 
             # Critic challenges assumptions
             critic_feedback = self.critic.review(plan_draft, arch_feedback)
@@ -176,29 +181,50 @@ class Phase1Orchestrator:
             }
 
             # Check for consensus
-            if self.has_consensus(votes) and self.no_open_questions(plan_draft):
+            if self.has_consensus(votes) and self.acceptable_open_questions(plan_draft):
                 return self.finalize_plan_report(plan_draft)
 
-            # Track blocks
+            # Track blocks and escalate if needed
+            blocking_agents = []
             for agent, vote in votes.items():
                 if vote.status == 'BLOCK':
-                    if self.get_block_count(agent) >= 3:
+                    if self.get_block_count(agent) >= MAX_BLOCKS_PER_AGENT:
                         vote.escalate_to_non_blocking()
+                    else:
+                        blocking_agents.append((agent, vote.reason))
 
-            # Planner incorporates feedback
-            plan_draft = self.planner.revise(
+            if not blocking_agents:
+                # All blocks escalated, treat as consensus
+                return self.finalize_plan_report(plan_draft)
+
+            # Issue-scoped iteration: Only re-invoke blocking agents
+            # Planner does incremental revision (minimal, targeted changes)
+            revised_sections = self.planner.incremental_revise(
                 plan_draft,
-                arch_feedback,
-                critic_feedback
+                blocking_concerns=blocking_agents
             )
+
+            # Re-invoke only blocking agents with targeted context
+            for agent, concern in blocking_agents:
+                if agent == 'architect' and not self.requires_architect_review(revised_sections):
+                    # Skip architect if changes are non-architectural
+                    continue
+
+                # Provide only their concern and relevant revised sections
+                self.review_targeted(agent, concern, revised_sections)
 
         raise Exception("Phase 1 failed to reach consensus")
 
     def has_consensus(self, votes):
         return all(v.status == 'APPROVE' for v in votes.values())
 
-    def no_open_questions(self, plan_draft):
-        return len(plan_draft.open_questions) == 0
+    def acceptable_open_questions(self, plan_draft):
+        # Allow up to MAX_OPEN_QUESTIONS if documented as risk
+        return len(plan_draft.open_questions) <= MAX_OPEN_QUESTIONS
+
+    def requires_architect_review(self, changes):
+        # Check if changes affect architecture, tech choice, or system boundaries
+        return changes.affects_architecture or changes.affects_tech_choice or changes.affects_system_boundaries
 ```
 
 ## Phase 2 Building Orchestrator
@@ -482,13 +508,14 @@ This maintains the anti-slop guarantee throughout the loop.
 ## Key Invariants
 
 1. **No phase can complete without unanimous APPROVE votes**
-2. **Each agent has max 3 BLOCKs before escalation**
-3. **Phase 1 cannot complete with open questions**
+2. **Each agent has max `MAX_BLOCKS_PER_AGENT` BLOCKs before escalation**
+3. **Phase 1 cannot complete with > `MAX_OPEN_QUESTIONS` open questions** (prefer 0, accept minimal if documented as risk)
 4. **Phase 2 tests must pass Senior Engineer validation before implementation begins**
 5. **Phase 2 cannot complete with failing tests**
 6. **Phase 3 blocks ship if blocking_issues > 0**
 7. **Phase 3 → Phase 2 loop always reconvenes full committee**
 8. **Artifacts are immutable contracts between phases**
+9. **Phase 1 iteration is issue-scoped**: Re-invoke only blocking agents with targeted context
 
 ## Error Handling
 

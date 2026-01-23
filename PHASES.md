@@ -36,13 +36,21 @@ _Critic:_
 **Consensus Rules:**
 
 - Each agent must explicitly output: `APPROVE` or `BLOCK (with reason)`
-- Each agent has maximum 3 blocks available before they must escalate to "non-blocking concern"
+- Each agent has maximum `MAX_BLOCKS_PER_AGENT` blocks available before they must escalate to "non-blocking concern"
 - Phase completes only when all agents APPROVE (zero BLOCKs remain)
-- All open questions must be resolved
+- Open questions must be ≤ `MAX_OPEN_QUESTIONS` (prefer 0, accept minimal count if documented as risk and doesn't block Phase 2 testability)
+
+**Performance Constraints (Loop Reduction):**
+
+- **Critic**: Maximum `MAX_BLOCKS_PER_AGENT` blocking issues per iteration; issues testable in Phase 2 should not block Phase 1
+- **Planner**: Incremental revision only - minimal targeted changes, preserve unchanged sections verbatim
+- **Architect**: Conditional re-engagement - only re-review if revisions affect architecture, tech choice, or system boundaries
+- **Orchestrator**: Issue-scoped iteration - re-invoke only blocking agents with only their concern and relevant revised sections
+- **Expected convergence**: 1-3 iterations (max: `MAX_PLANNING_ITERATIONS`)
 
 **Dynamic:**
 
-Planner drafts the approach, Architect provides expertise on technical decisions, and Critic identifies risks and gaps. They iterate until all concerns are addressed and the approach is sound. The Critic's challenges force the Planner to address edge cases early, while the Architect ensures technical feasibility.
+Planner drafts the approach, Architect provides expertise on technical decisions, and Critic identifies risks and gaps. They iterate until all concerns are addressed and the approach is sound. The Critic's challenges force the Planner to address edge cases early, while the Architect ensures technical feasibility. Performance constraints ensure fast convergence by reducing token usage and preventing perfectionist deadlocks.
 
 ---
 
