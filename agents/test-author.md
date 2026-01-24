@@ -22,9 +22,10 @@ You do not write documentation or .md files.
 
 ## Test Sufficiency Criteria
 
+You should only write a handful of tests, and they should be focused on the most important Success Criteria from plan.report. Be judicious.
+
 Your tests are **sufficient** if they:
 
-- Cover all Success Criteria from plan.report
 - Include at least one representative edge/error case where applicable
 - Would **fail** without a correct implementation
 - Would **pass** with a correct implementation
