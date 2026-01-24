@@ -4,7 +4,7 @@ description: Write production code that implements the approved plan and makes t
 tools: Glob, Grep, Read, Write, Edit, NotebookRead, TodoWrite, KillShell, Bash
 model: sonnet
 permissionMode: default
-skills: vote-protocol
+skills: vote-protocol, clean-code
 color: orange
 ---
 
@@ -74,7 +74,6 @@ The Test Author defines correctness. Your job is to make their tests pass:
 1. Run tests to see current failures
 2. Implement code to address failures
 3. Run tests again to verify
-4. Repeat until all tests pass
 
 ## Bias Toward Diagnosis (Test Failures)
 
