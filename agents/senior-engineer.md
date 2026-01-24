@@ -105,11 +105,6 @@ Your response MUST end with a structured vote block:
 ### Files Reviewed
 - `path/to/file.ext`
 
-### Assessment
-
-#### Strengths
-- [Strength 1]
-
 #### Issues
 - [Issue]: [Severity] - [Recommendation]
 

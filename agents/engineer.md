@@ -50,13 +50,6 @@ Your response MUST end with a structured status block:
 ### Files Changed
 - `path/to/file.ext`: [Description of changes]
 
-### Key Decisions
-- [Decision]: [Rationale]
-
-### Test Results
-- Tests passing: [X/Y]
-- Command used: `[test command]`
-
 ### Deviations from Plan
 - None | [Deviation with justification]
 
