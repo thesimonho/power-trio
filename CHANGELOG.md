@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.2.0](https://github.com/thesimonho/power-trio/compare/v1.1.3...v1.2.0) (2026-01-24)
+
+
+### Features
+
+* ask user for what they want to test/review ([5684710](https://github.com/thesimonho/power-trio/commit/5684710a39ac5a6902b1114cbbf76644491bd7e9))
+
+
+### Bug Fixes
+
+* dont write test documentation ([a33bd51](https://github.com/thesimonho/power-trio/commit/a33bd512f717fccda9b00f8d10aa1f62a9071dc6))
+* give engineer access to clean code ([495f11a](https://github.com/thesimonho/power-trio/commit/495f11a4120f64b7e67465a9ae57b56c4ad15b04))
+* improve clarity of the individual phases ([f20fc73](https://github.com/thesimonho/power-trio/commit/f20fc737bf373fb0db66bc32f07643c5a7b7d9b9))
+* reduce build outputs ([bc7b3a6](https://github.com/thesimonho/power-trio/commit/bc7b3a60ac11e0af0d945478bf75a119bdb77463))
+
 ## [1.1.3](https://github.com/thesimonho/power-trio/compare/v1.1.2...v1.1.3) (2026-01-23)
 
 
