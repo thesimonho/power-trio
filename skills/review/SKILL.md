@@ -1,5 +1,5 @@
 ---
-description: Execute the Power Trio review phase only. Use proactively when checking the security or performance of an existing implementation.
+description: Execute the Power Trio review phase only. Use proactively when checking the security or performance of an implementation.
 disable-model-invocation: false
 user-invocable: true
 context: fork
@@ -12,11 +12,15 @@ Execute Phase 3: Review with the Power Trio committee.
 
 You are orchestrating **Phase 3: Review**. This phase evaluates the feature implementation for security and performance issues before shipping.
 
+Start by announcing who you are, what your approach will be, and why
+
 ## Task
 
 Review for release readiness: **$ARGUMENTS**
 
 If no arguments provided, look for `.power-trio/implementation.report.md`. If that doesn't exist, ask the user what to review.
+
+If the task is incomplete or unclear, this is the ideal time to ask the user for clarification before proceeding.
 
 ## Committee Members
 

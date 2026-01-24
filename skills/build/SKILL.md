@@ -1,5 +1,5 @@
 ---
-description: Execute the Power Trio build phase only. Use proactively when implementing a feature.
+description: Execute the Power Trio build phase only. Use proactively when writing, modifying, fixing, or testing code.
 disable-model-invocation: false
 user-invocable: true
 context: fork
@@ -7,6 +7,15 @@ agent: orchestrator
 ---
 
 Execute Phase 2: Build with the Power Trio committee using Test-Driven Development.
+
+This phase handles all code modification tasks including:
+
+- Implementing new features
+- Extending existing functionality
+- Fixing bugs and errors
+- Refactoring existing code
+- Improving or optimizing implementations
+- Writing tests for existing functionality
 
 ---
 
@@ -25,11 +34,15 @@ Key parameters for this phase (see parameters skill):
 
 You are orchestrating **Phase 2: Build**. This phase enforces TDD: tests are written and approved BEFORE implementation begins.
 
+Start by announcing who you are, what your approach will be, and why
+
 ## Task
 
-Build the implementation based on: **$ARGUMENTS**
+Execute code changes based on: **$ARGUMENTS**
 
-If no arguments provided, look for `.power-trio/plan.report.md`. If that doesn't exist, ask the user what to build.
+If no arguments provided, look for `.power-trio/plan.report.md`. If that doesn't exist, ask the user what they want to do.
+
+If it is incomplete or unclear, this is the ideal time to ask the user for clarification before proceeding.
 
 ## Committee Members
 
@@ -79,14 +92,14 @@ block_counts: {test_author: 0, engineer: 0, senior_engineer: 0}
 
 ## STAGE 1: Test Creation and Review
 
-Important: only invoke the test creation and senior review steps if there is already an existing testing framework in place.
+Important: only invoke the test creation and senior review steps if there is already an existing testing framework in place. You may proceed if there is a framework, even if there is no specific test file for the current work yet.
 
 ### Step 1.1: Create Tests
 
 Invoke test-author to write tests FIRST (before any implementation):
 
 ```
-Task(subagent_type="power-trio:test-author", prompt="Based on this plan, write tests that define correctness. Tests should cover all success criteria, edge cases, and error cases. Write tests that will FAIL initially (no implementation exists yet).\n\nPlan:\n[PLAN.REPORT CONTENT]\n\nCreate test files and provide the test specification.")
+Task(subagent_type="power-trio:test-author", prompt="Based on this plan, write tests that define correctness. Tests should cover critical success criteria, edge cases, and error cases.\n\nFor new functionality: Write tests that will FAIL initially (no implementation exists yet).\nFor bug fixes: Write tests that reproduce the bug and verify the fix.\nFor refactoring: Write tests that verify behavior is preserved.\n\nPlan:\n[PLAN.REPORT CONTENT]\n\nCreate test files and provide the test specification.")
 ```
 
 ### Step 1.2: Review Tests
@@ -127,7 +140,7 @@ Parse senior-engineer's vote:
 Once tests are approved, invoke engineer:
 
 ```
-Task(subagent_type="power-trio:engineer", prompt="Implement code to make these approved tests pass. Follow the plan exactly.\n\nPlan:\n[PLAN.REPORT CONTENT]\n\nApproved Tests:\n[APPROVED TESTS]\n\nWrite the implementation and run the tests.")
+Task(subagent_type="power-trio:engineer", prompt="Implement code to make these approved tests pass. Follow the plan exactly.\n\nFor new features: Write the implementation from scratch.\nFor bug fixes: Modify existing code to fix the issue.\nFor refactoring: Restructure code while maintaining test coverage.\n\nPlan:\n[PLAN.REPORT CONTENT]\n\nApproved Tests:\n[APPROVED TESTS]\n\nWrite the implementation and run the tests.")
 ```
 
 ### Step 2.2: Verify Tests Pass
@@ -192,7 +205,7 @@ Write(file_path=".power-trio/implementation.report.md", content="[ARTIFACT]")
 
 ## Task
 
-[From plan.report]
+[From plan.report or user request - describe what was built, fixed, or improved]
 
 ## Files Changed
 

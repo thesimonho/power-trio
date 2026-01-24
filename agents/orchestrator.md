@@ -1,7 +1,7 @@
 ---
 name: orchestrator
 description: Coordinate Power Trio workflows and subagents.
-tools: Read, Glob, Grep, TodoWrite, WebFetch, KillShell, TaskOutput, ExitPlanMode, Skill, Task
+tools: Read, Glob, Grep, TodoWrite, WebFetch, KillShell, Skill, Task, AskUserQuestion
 model: haiku
 permissionMode: default
 skills: parameters, artifact-schemas, vote-protocol
