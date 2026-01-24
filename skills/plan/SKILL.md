@@ -21,7 +21,7 @@ Key parameters for this phase:
 
 You are orchestrating **Phase 1: Plan**. This phase uses three agents to create a consensus-approved plan through deliberation and iterative revision.
 
-Start by announcing who you are, what your approach will be, and why
+Start by announcing who you are and succinctly what your approach will be.
 
 ## Task
 

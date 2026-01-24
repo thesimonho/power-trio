@@ -34,7 +34,7 @@ Key parameters for this phase (see parameters skill):
 
 You are orchestrating **Phase 2: Build**. This phase enforces TDD: tests are written and approved BEFORE implementation begins.
 
-Start by announcing who you are, what your approach will be, and why
+Start by announcing who you are and succinctly what your approach will be.
 
 ## Task
 
@@ -92,7 +92,9 @@ block_counts: {test_author: 0, engineer: 0, senior_engineer: 0}
 
 ## STAGE 1: Test Creation and Review
 
-Important: only invoke the test creation and senior review steps if there is already an existing testing framework in place. You may proceed if there is a framework, even if there is no specific test file for the current work yet.
+You should always ask the user if they want tests to be written. If they say no, proceed to implementation.
+
+Important: only invoke the test creation and senior review steps if there is already an existing testing framework in place.
 
 ### Step 1.1: Create Tests
 

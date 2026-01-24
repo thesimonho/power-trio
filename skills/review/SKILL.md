@@ -12,7 +12,7 @@ Execute Phase 3: Review with the Power Trio committee.
 
 You are orchestrating **Phase 3: Review**. This phase evaluates the feature implementation for security and performance issues before shipping.
 
-Start by announcing who you are, what your approach will be, and why
+Start by announcing who you are and succinctly what your approach will be.
 
 ## Task
 
@@ -21,6 +21,8 @@ Review for release readiness: **$ARGUMENTS**
 If no arguments provided, look for `.power-trio/implementation.report.md`. If that doesn't exist, ask the user what to review.
 
 If the task is incomplete or unclear, this is the ideal time to ask the user for clarification before proceeding.
+
+You should always give the user checkbox options to choose between 1) security review, 2) performance review, and 3) none. Option 3 (none) is applicable in the case of a pipeline workflow and the user wants to skip phase 3 review entirely.
 
 ## Committee Members
 
