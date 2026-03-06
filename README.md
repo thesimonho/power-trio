@@ -1,7 +1,7 @@
 # Power Trio
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/4fb6a29d-ac37-468d-8c0a-dfefc876136b" height="30%" width="30%" alt="logo">
+  <img src="https://github.com/user-attachments/assets/878271fa-81cb-4d8c-b4e1-5e2956f09587" height="30%" width="30%" alt="logo">
 </p>
 
 <p align="center" style="font-size: 0.9em; font-style: italic;">
